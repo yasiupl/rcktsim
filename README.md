@@ -1,2 +1,2 @@
-# shenanigator
-Simple C++ 2D Game. School Project.
+# rcktsim
+Simple C++ 2D Rocket Simulation. School Project.
