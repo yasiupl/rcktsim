@@ -1,6 +1,6 @@
 build: ## Build the binary
-	g++ -c poke.cpp
-	g++ poke.o -o rcktsim.out -lsfml-graphics -lsfml-window -lsfml-system
+	g++ -c main.cpp
+	g++ main.o -o rcktsim.out -lsfml-graphics -lsfml-window -lsfml-system
 	
 run: build ## Build and run the binary
 	./rcktsim.out
