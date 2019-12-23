@@ -45,9 +45,13 @@ class Rocket {
         
     };
 
-    sf::Vector2f getPostion() {
+    sf::Vector2f getPosition() {
         return sprite.getPosition();
     } 
+
+	float getRotation() {
+		return sprite.getRotation();
+	}
 
     void throttleUp() {
         if(throttle < 1) {

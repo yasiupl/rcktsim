@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "rocket.cpp"
-#include "projectile.cpp"
+#include "missle.cpp"
 
 #define MAX_FPS 60
 
@@ -30,13 +30,13 @@ class Game {
     private:
 	Rocket *falcon;
 	sf::RenderWindow *window;
-	std::vector<Projectile> projectiles;
+	sf::Vector2f bbox;
+	std::vector<Missle*> projectiles;
 
     public:
     Game(sf::RenderWindow* _window) {
         window = _window;
 
-        sf::Vector2f bbox;
     	bbox.x = (float)window->getSize().x;
     	bbox.y = (float)window->getSize().y;
 
@@ -45,6 +45,12 @@ class Game {
     	startPosition.y = window->getSize().y/2;
 		falcon = new Rocket(startPosition, 0.1, bbox, 0.5, window);
     }
+
+	void spawnMissle() {
+		Missle *newMissle;
+		newMissle = new Missle(falcon->getPosition(), bbox, falcon->getRotation(), window);
+		projectiles.push_back(newMissle);
+	}
 
 	void consumeInput() {
 		sf::Event event;
@@ -75,6 +81,10 @@ class Game {
         {
             falcon->rotateCounterClockwise();
         }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+        {
+            spawnMissle();
+        }
 	};
 
 	void mainLoop() {
@@ -82,7 +92,11 @@ class Game {
 
         window->clear();
 
-		falcon->draw();
+		for(int i = 0; i < projectiles.size(); ++i) {
+			projectiles[i]->draw();
+		}
+
+        falcon->draw();
 
         window->display();
 	}
