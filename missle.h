@@ -2,6 +2,7 @@
 #include <math.h>
 #include "entity.h"
 
+
 class Missle : public Entity {
     protected:
         float speed = 1000;
