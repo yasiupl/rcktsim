@@ -3,7 +3,7 @@
 
 class Entity {
 	protected:
-		bool exploded = false;
+		bool dead = false;
 		std::vector<Entity*> *renderQueue;
 		sf::RenderTarget *target;
         sf::Sprite sprite;
@@ -36,17 +36,17 @@ class Entity {
 	virtual void animate() = 0;
 
 	void draw() {
-		if(!exploded) {
+		if(!dead) {
         	animate();
         	target->draw(sprite);
 		}
     }
 
 	void stop() {
-		exploded = true;
+		dead = true;
 	}
 
-	bool isExploded() {
-		return exploded;
+	bool isDead() {
+		return dead;
 	}
 };

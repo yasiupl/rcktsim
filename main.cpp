@@ -59,10 +59,10 @@ class Game {
                 window->close();
             }
 
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) {
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Space)) {
                 falcon->throttleToggle();
             }   
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Space)) {
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) {
                 falcon->spawnMissle();
             }   
         }
@@ -84,6 +84,8 @@ class Game {
         {
             falcon->rotateCounterClockwise();
         }
+
+        falcon->lookAt(sf::Mouse::getPosition(*window));
 	};
 
 	void loop() {
@@ -95,7 +97,7 @@ class Game {
 
 		for(int i = 0; i < renderQueue.size(); ++i) {
 			renderQueue[i]->draw();
-            if(renderQueue[i]->isExploded()) {
+            if(renderQueue[i]->isDead()) {
                 delete renderQueue[i];
                 renderQueue.erase(renderQueue.begin() + i);
             } 
