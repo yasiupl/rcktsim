@@ -59,9 +59,8 @@ class Rocket : public Entity {
     }
 
     void spawnMissle() {
-        Missle* missle;
-        missle = new Missle(getPosition(), getRotation(), bbox, target, renderQueue);
-		renderQueue->push_back(missle);
+		renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, target, renderQueue));
+        //renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), bbox, target, renderQueue));
 	}
  
     void checkCollision() {
