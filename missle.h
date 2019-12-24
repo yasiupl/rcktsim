@@ -36,7 +36,7 @@ class Missle : public Entity {
     }
 
     void explode() {
-        if(!exploded) {
+        if(!dead) {
             renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), bbox, target, renderQueue));
             stop();
         }

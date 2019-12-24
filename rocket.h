@@ -15,6 +15,9 @@ class Rocket : public Entity {
 
         sf::Texture texture1;
 
+        sf::Vector2i lookAtPoint;
+        sf::Clock cooldownTimer;
+
     public:
     Rocket(sf::Vector2f _position, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity(_position, 0, _bbox, "rocket-off.png", 0.1, _target, _renderQueue)  {
 
@@ -58,9 +61,21 @@ class Rocket : public Entity {
         rotation += rotationSpeed * animationTime.asMilliseconds()/1000;
     }
 
+    void lookAt(sf::Vector2i point) {
+        if(point != lookAtPoint) {
+            position = sprite.getPosition();
+            rotation = (atan2(point.y - position.y, point.x - position.x) - 10.f) * 180 / 3.14159265;
+            lookAtPoint = point;
+        }
+    }
+
     void spawnMissle() {
-		renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, target, renderQueue));
-        //renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), bbox, target, renderQueue));
+        sf::Time cooldownTime = cooldownTimer.getElapsedTime();
+        if(cooldownTime.asMilliseconds() > 250.0f) {
+		    renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, target, renderQueue));
+            //renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), bbox, target, renderQueue));
+            cooldownTimer.restart();
+        }
 	}
  
     void checkCollision() {

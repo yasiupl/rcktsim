@@ -13,7 +13,7 @@ class Explosion : public Entity {
 	}
 
 	void animate() {
-		if(exploded == false) {
+		if(dead == false) {
 			animationTime = animationTimer.getElapsedTime();
 		if (animationTime.asMilliseconds() >= 50.0f) {
 			if (rectangle.left >= 4*96) {
