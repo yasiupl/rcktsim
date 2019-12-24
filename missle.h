@@ -1,6 +1,7 @@
 #pragma once
 #include <math.h>
 #include "entity.h"
+#include "explosion.h"
 
 
 class Missle : public Entity {
@@ -18,30 +19,29 @@ class Missle : public Entity {
         position = sprite.getPosition();
         if(position.x <= 0) {
             position.x = 0;
-            velocity.x = 0;
-            velocity.y = 0;
+            explode();
         }
         if(position.y <= 0) {
             position.y = 0;
-            velocity.x = 0;
-            velocity.y = 0;
+            explode();
         }
         if(position.x >= bbox.x) {
             position.x = bbox.x;
-            velocity.x = 0;
-            velocity.y = 0;
+            explode();
         }
         if(position.y >= bbox.y) {
             position.y = bbox.y;
-            velocity.x = 0;
-            velocity.y = 0;
+            explode();
         }
         sprite.setPosition(position);
         //std::cout<<position.x << ", " << position.y << ": " << x_vel << ", " << y_vel << std::endl;
     }
 
     void explode() {
-        
+        if(!exploded) {
+            renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), bbox, target, renderQueue));
+            stop();
+        }
     }
 
     bool checkCollisionWithEntity(float x, float y, float radius) {
