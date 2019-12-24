@@ -3,7 +3,6 @@
 
 #include "missle.h"
 #include "rocket.h"
-#include "explosion.h"
 
 
 #define MAX_FPS 60
@@ -92,12 +91,18 @@ class Game {
 
         window->clear();
 
-		for(int i = 0; i < renderQueue.size(); ++i) {
-			renderQueue[i]->draw();
-		}
-
         falcon->draw();
 
+		for(int i = 0; i < renderQueue.size(); ++i) {
+			renderQueue[i]->draw();
+            if(renderQueue[i]->isExploded()) {
+                delete renderQueue[i];
+                renderQueue.erase(renderQueue.begin() + i);
+            } 
+		}
+
+        //std::cout << renderQueue.size() << std::endl;
+        
         window->display();
         if(running) loop();
 	}
