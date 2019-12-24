@@ -1,8 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include "rocket.cpp"
+#include "entity.cpp"
+//#include "explosion.cpp"
 #include "missle.cpp"
+#include "rocket.cpp"
+
+
 
 #define MAX_FPS 60
 
@@ -28,10 +32,11 @@ class Window {
 
 class Game {
     private:
+    bool running = 1;
 	Rocket *falcon;
 	sf::RenderWindow *window;
 	sf::Vector2f bbox;
-	std::vector<Missle*> projectiles;
+	std::vector<Entity*> renderQueue;
 
     public:
     Game(sf::RenderWindow* _window) {
@@ -43,28 +48,29 @@ class Game {
 		sf::Vector2f startPosition;
         startPosition.x = window->getSize().x/2;
     	startPosition.y = window->getSize().y/2;
-		falcon = new Rocket(startPosition, 0.1, bbox, 0.5, window);
+		falcon = new Rocket(startPosition, bbox, window, &renderQueue);
     }
-
-	void spawnMissle() {
-		Missle *newMissle;
-		newMissle = new Missle(falcon->getPosition(), bbox, falcon->getRotation(), window);
-		projectiles.push_back(newMissle);
-	}
 
 	void consumeInput() {
 		sf::Event event;
 		
+        // fire once
         while (window->pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
+                stop();
                 window->close();
+            }
 
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Space)) {
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) {
                 falcon->throttleToggle();
             }   
-        
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Space)) {
+                falcon->spawnMissle();
+            }   
         }
+
+        // fire while pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
         {
             falcon->throttleUp();
@@ -81,28 +87,29 @@ class Game {
         {
             falcon->rotateCounterClockwise();
         }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-        {
-            spawnMissle();
-        }
 	};
 
-	void mainLoop() {
+	void loop() {
 		consumeInput();
 
         window->clear();
 
-		for(int i = 0; i < projectiles.size(); ++i) {
-			projectiles[i]->draw();
+		for(int i = 0; i < renderQueue.size(); ++i) {
+			renderQueue[i]->draw();
 		}
 
         falcon->draw();
 
         window->display();
+        if(running) loop();
 	}
 
+    void stop() {
+        running = 0;
+    }
+
 	bool isRunning() {
-		return window->isOpen();
+		return running;
 	}
 };   
 
@@ -112,10 +119,9 @@ int main()
 	Window window(500, 1000, "new game", MAX_FPS);
 
 	Game game(window.getTarget());
-    while (game.isRunning())
-    {
-		game.mainLoop();
-    }
+
+	game.loop();
+
 
     return 0;
 };
