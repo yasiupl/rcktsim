@@ -1,10 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include "entity.cpp"
-//#include "explosion.cpp"
-#include "missle.cpp"
-#include "rocket.cpp"
+//#include "explosion.h"
+#include "missle.h"
+#include "rocket.h"
 
 
 

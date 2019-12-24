@@ -1,5 +1,6 @@
-#include <SFML/Graphics.hpp>
+#pragma once
 #include <math.h>
+#include "entity.h"
 
 class Missle : public Entity {
     protected:

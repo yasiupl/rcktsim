@@ -1,5 +1,7 @@
-#include <SFML/Graphics.hpp>
+#pragma once
 #include <math.h>
+#include "entity.h"
+#include "missle.h"
 
 class Rocket : public Entity {
 
