@@ -64,7 +64,7 @@ class Rocket : public Entity {
     void lookAt(sf::Vector2i point) {
         if(point != lookAtPoint) {
             position = sprite.getPosition();
-            rotation = (atan2(point.y - position.y, point.x - position.x) - 10.f) * 180 / 3.14159265;
+            rotation = (atan2(point.y - position.y, point.x - position.x) - 80.f) * 180 / 3.14159265;
             lookAtPoint = point;
         }
     }
@@ -72,8 +72,9 @@ class Rocket : public Entity {
     void spawnMissle() {
         sf::Time cooldownTime = cooldownTimer.getElapsedTime();
         if(cooldownTime.asMilliseconds() > 250.0f) {
-		    renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, target, renderQueue));
-            //renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), bbox, target, renderQueue));
+		    renderQueue->push_back(new Missle(getPosition(), getRotation() + 5.f, bbox, target, renderQueue));
+            renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, target, renderQueue));
+            renderQueue->push_back(new Missle(getPosition(), getRotation() - 5.f, bbox, target, renderQueue));
             cooldownTimer.restart();
         }
 	}
