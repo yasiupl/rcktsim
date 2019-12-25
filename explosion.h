@@ -6,7 +6,7 @@ class Explosion : public Entity {
 		sf::IntRect rectangle;
 
 	public:
-		Explosion(sf::Vector2f _position, float _rotation, float _scale, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity("explosion", 0, 0, _position, rand(), _bbox, "explosion.png", _scale, _target, _renderQueue), rectangle(0, 0, 96, 96) {
+		Explosion(sf::Vector2f _position, float _rotation, float _scale, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity("explosion", 0, 0, _position, rand(), "explosion.png", _scale, _target, _renderQueue), rectangle(0, 0, 96, 96) {
 			
 			sprite.setTextureRect(rectangle);
 			sprite.setOrigin(48, 48);

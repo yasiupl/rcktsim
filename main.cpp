@@ -5,7 +5,7 @@
 #include "rocket.h"
 
 
-#define MAX_FPS 60
+#define MAX_FPS 6000
 
 class Window {
 	private:
@@ -32,15 +32,17 @@ class Game {
     bool running = 1;
 	Rocket *falcon;
 	sf::RenderWindow *window;
-	sf::Vector2f bbox;
+	sf::FloatRect bbox;
 	std::vector<Entity*> renderQueue;
 
     public:
     Game(sf::RenderWindow* _window) {
         window = _window;
 
-    	bbox.x = (float)window->getSize().x;
-    	bbox.y = (float)window->getSize().y;
+    	bbox.left = 0;
+    	bbox.top = 0;
+        bbox.width = (float)window->getSize().x;
+        bbox.height = (float)window->getSize().y;
 
 		sf::Vector2f startPosition;
         startPosition.x = window->getSize().x/2;
@@ -80,7 +82,7 @@ class Game {
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num3)) {
                 
-                renderQueue.push_back(new Explosion(sf::Vector2f(sf::Mouse::getPosition(*window)), 0, 0.5, bbox, window, &renderQueue));
+                renderQueue.push_back(new Explosion(sf::Vector2f(sf::Mouse::getPosition(*window)), 0, 0.5, window, &renderQueue));
             }     
         }
 

@@ -1,65 +1,22 @@
 #pragma once
-#include <math.h>
-#include "entity.h"
+#include "controllable.h"
 #include "missle.h"
+#include "bboxed.h"
 
-class Rocket : public Entity {
+class Rocket : public ControllableEntity, public Bboxed {
 
     protected:
-        float life = 100;
-
         float springiness = 0.5;
-        float rotationSpeed = 250;
-        bool engineOn = false;
-        float throttle = 0.3;
-        float throttleStep = 1;
-        float engineISP = 10;
 
         sf::Texture texture1;
 
-        sf::Vector2i lookAtPoint;
+        
 
     public:
-    Rocket(sf::Vector2f _position, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity("rocket", 100, 10, _position, 0, _bbox, "rocket-off.png", 0.1, _target, _renderQueue)  {
+    Rocket(sf::Vector2f _position, sf::FloatRect _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : ControllableEntity("rocket", 100, 10, _position, 0, "rocket-off.png", 0.1, _target, _renderQueue), Bboxed(_bbox)  {
         texture1.loadFromFile("rocket-on.png");
         sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
     };
-
-    void throttleUp() {
-        if(throttle < 1) {
-            throttle += throttleStep * animationTime.asMilliseconds()/1000;
-        }
-    }
-
-    void throttleDown() {
-        if(throttle > 0.3) {
-            throttle -= throttleStep * animationTime.asMilliseconds()/1000;
-        }
-    }
-    void throttleToggle() {
-        if(engineOn == true) {
-            sprite.setTexture(texture);
-            engineOn = false;
-        } else {
-            engineOn = true;
-            sprite.setTexture(texture1);
-        }
-    }
-
-    void rotateClockwise() {
-        rotation -= rotationSpeed * animationTime.asMilliseconds()/1000;
-    }
-    void rotateCounterClockwise() {
-        rotation += rotationSpeed * animationTime.asMilliseconds()/1000;
-    }
-
-    void lookAt(sf::Vector2i point) {
-        if(point != lookAtPoint) {
-            position = sprite.getPosition();
-            rotation = (atan2(point.y - position.y, point.x - position.x) - 80.f) * 180 / 3.14159265;
-            lookAtPoint = point;
-        }
-    }
 
     void spawnMissle() {
         cooldownTime = cooldownTimer.getElapsedTime();
@@ -69,25 +26,27 @@ class Rocket : public Entity {
         }
 	}
  
-    void checkCollision() {
+    void checkBoundries() {
         position = sprite.getPosition();
-        if(position.x <= 0) {
-            position.x = 0;
-            velocity.x *= -1 * springiness;
+        if(!bbox.contains(position)) {
+            if(position.x <= bbox.left) {
+                position.x = bbox.left;
+                velocity.x *= -1 * springiness;
+            }
+            if(position.y <= bbox.top) {
+                position.y = bbox.top;
+                velocity.y *= -1 * springiness;
+            }
+            if(position.x >= (bbox.width - bbox.left)) {
+                position.x = (bbox.width - bbox.left);
+                velocity.x *= -1 * springiness;
+            }
+            if(position.y >= (bbox.height - bbox.top)) {
+                position.y = (bbox.height - bbox.top);
+                velocity.y *= -1 * springiness;
+            }
+            sprite.setPosition(position);
         }
-        if(position.y <= 0) {
-            position.y = 0;
-            velocity.y *= -1 * springiness;
-        }
-        if(position.x >= bbox.x) {
-            position.x = bbox.x;
-            velocity.x *= -1 * springiness;
-        }
-        if(position.y >= bbox.y) {
-            position.y = bbox.y;
-            velocity.y *= -1 * springiness;
-        }
-        sprite.setPosition(position);
         //std::cout<<position.x << ", " << position.y << ": " << velocity.x << ", " << velocity.y << std::endl;
     }
  
@@ -99,13 +58,14 @@ class Rocket : public Entity {
         sprite.setRotation(rotation);
 
         if(engineOn) {
+            sprite.setTexture(texture1);
             velocity.x += cos((sprite.getRotation() - 90.f) *  3.14159265 / 180) * engineISP * throttle * animationTime.asMilliseconds()/1000;
             velocity.y += sin((sprite.getRotation() - 90.f) *  3.14159265 / 180) * engineISP * throttle * animationTime.asMilliseconds()/1000;
-        }
+        } else sprite.setTexture(texture);
         
         sprite.move(velocity.x, velocity.y);
 
-        checkCollision();
+        checkBoundries();
 
         animationTimer.restart();
     }
@@ -122,7 +82,7 @@ class Rocket : public Entity {
     }
 
     void destroy() {
-        renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), 2, bbox, target, renderQueue));
+        renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), 2, target, renderQueue));
         stop();
     }
 };

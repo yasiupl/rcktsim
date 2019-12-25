@@ -13,7 +13,7 @@ class Entity {
 		sf::RenderTarget *target;
         sf::Sprite sprite;
         sf::Texture texture;
-        sf::Vector2f position, bbox, velocity;
+        sf::Vector2f position, velocity;
 
         sf::Clock animationTimer;
         sf::Time animationTime;
@@ -26,12 +26,11 @@ class Entity {
 		float rotation, scale;
 
 	public:
-		Entity(std::string _type, float _life, float _damage, sf::Vector2f _position, float _rotation, sf::Vector2f _bbox, std::string _texture, float _scale, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) {
+		Entity(std::string _type, float _life, float _damage, sf::Vector2f _position, float _rotation, std::string _texture, float _scale, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) {
 			type = _type;
 			life = _life;
 			damage = _damage;
 			position = _position;
-        	bbox = _bbox;
         	target = _target;
 			renderQueue = _renderQueue;
 			scale = _scale;
