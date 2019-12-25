@@ -46,6 +46,8 @@ class Game {
         startPosition.x = window->getSize().x/2;
     	startPosition.y = window->getSize().y/2;
 		falcon = new Rocket(startPosition, bbox, window, &renderQueue);
+
+        renderQueue.push_back(falcon);
     }
 
 	void consumeInput() {
@@ -64,7 +66,22 @@ class Game {
             }   
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) {
                 falcon->spawnMissle();
-            }   
+            } 
+
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num1)) {
+                
+                renderQueue.push_back(new Rocket(sf::Vector2f(sf::Mouse::getPosition(*window)), bbox, window, &renderQueue));
+            } 
+
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num2)) {
+                
+                renderQueue.push_back(new Missle(sf::Vector2f(sf::Mouse::getPosition(*window)), 0, bbox, window, &renderQueue));
+            }  
+
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num3)) {
+                
+                renderQueue.push_back(new Explosion(sf::Vector2f(sf::Mouse::getPosition(*window)), 0, 0.5, bbox, window, &renderQueue));
+            }     
         }
 
         // fire while pressed
@@ -93,10 +110,18 @@ class Game {
 
         window->clear();
 
-        falcon->draw();
-
 		for(int i = 0; i < renderQueue.size(); ++i) {
 			renderQueue[i]->draw();
+
+            for(int j = 0; j < renderQueue.size(); ++j) {
+                if(i != j && renderQueue[i]->getHitbox().contains(renderQueue[j]->getPosition())) {
+                    if(renderQueue[i]->isDead() == false  && renderQueue[i]->getTime() > 100.f && renderQueue[j]->getTime() > 100.f) {
+                        renderQueue[i]->collide(renderQueue[j]);
+                        renderQueue[j]->collide(renderQueue[i]);
+                    }
+                }
+            }
+
             if(renderQueue[i]->isDead()) {
                 delete renderQueue[i];
                 renderQueue.erase(renderQueue.begin() + i);

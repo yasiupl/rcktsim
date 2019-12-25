@@ -6,6 +6,8 @@
 class Rocket : public Entity {
 
     protected:
+        float life = 100;
+
         float springiness = 0.5;
         float rotationSpeed = 250;
         bool engineOn = false;
@@ -16,22 +18,12 @@ class Rocket : public Entity {
         sf::Texture texture1;
 
         sf::Vector2i lookAtPoint;
-        sf::Clock cooldownTimer;
 
     public:
-    Rocket(sf::Vector2f _position, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity(_position, 0, _bbox, "rocket-off.png", 0.1, _target, _renderQueue)  {
-
+    Rocket(sf::Vector2f _position, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity("rocket", 100, 10, _position, 0, _bbox, "rocket-off.png", 0.1, _target, _renderQueue)  {
         texture1.loadFromFile("rocket-on.png");
         sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
     };
-
-    sf::Vector2f getPosition() {
-        return sprite.getPosition();
-    } 
-
-	float getRotation() {
-		return sprite.getRotation();
-	}
 
     void throttleUp() {
         if(throttle < 1) {
@@ -70,11 +62,9 @@ class Rocket : public Entity {
     }
 
     void spawnMissle() {
-        sf::Time cooldownTime = cooldownTimer.getElapsedTime();
-        if(cooldownTime.asMilliseconds() > 250.0f) {
-		    renderQueue->push_back(new Missle(getPosition(), getRotation() + 5.f, bbox, target, renderQueue));
+        cooldownTime = cooldownTimer.getElapsedTime();
+        if(cooldownTime.asMilliseconds() > 50.0f) {
             renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, target, renderQueue));
-            renderQueue->push_back(new Missle(getPosition(), getRotation() - 5.f, bbox, target, renderQueue));
             cooldownTimer.restart();
         }
 	}
@@ -118,5 +108,19 @@ class Rocket : public Entity {
         checkCollision();
 
         animationTimer.restart();
+    }
+
+    void collide(Entity *entity) {
+        entity->attack(damage);
+        sf::Vector2f colliderPosition = entity->getPosition();
+        velocity.x += (colliderPosition.x - position.x)/2;
+        velocity.y += (colliderPosition.y - position.y)/2;
+        velocity.y *= -0.1 * springiness;
+        velocity.x *= -0.1 * springiness;
+    }
+
+    void destroy() {
+        renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), 2, bbox, target, renderQueue));
+        stop();
     }
 };

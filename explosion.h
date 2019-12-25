@@ -6,7 +6,7 @@ class Explosion : public Entity {
 		sf::IntRect rectangle;
 
 	public:
-		Explosion(sf::Vector2f _position, float _rotation, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity(_position, _rotation - 90.f, _bbox, "explosion.png", 1.0, _target, _renderQueue), rectangle(0, 0, 96, 96) {
+		Explosion(sf::Vector2f _position, float _rotation, float _scale, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity("explosion", 0, 2, _position, rand(), _bbox, "explosion.png", _scale, _target, _renderQueue), rectangle(0, 0, 96, 96) {
 			
 			sprite.setTextureRect(rectangle);
 			sprite.setOrigin(48, 48);
@@ -32,5 +32,14 @@ class Explosion : public Entity {
 			animationTimer.restart();
 		}
 		}
+	}
+
+	void collide(Entity *entity) {
+		if(entity->getType() != getType())
+        	entity->attack(damage);
+    }
+
+	void destroy() {
+		stop();
 	}
 };
