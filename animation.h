@@ -12,7 +12,7 @@ class Animation : public Entity {
 	sf::Vector2i frames;
 	
 	public:
-	Animation(sf::Vector2f position, float rotation, float scale, std::string texture, sf::Vector2i _size, sf::Vector2i _frames, float _time, sf::RenderTarget *target, std::vector<Entity*> *renderQueue): Entity("animation", 1000, 0, position, rotation - 90.f, texture, scale, target, renderQueue), rectangle(0, 0, _size.x, _size.y) {
+	Animation(sf::Vector2f position, float rotation, float scale, std::string texture, sf::Vector2i _size, sf::Vector2i _frames, float _time, std::vector<Entity*> *renderQueue): Entity("animation", 1000, 0, position, rotation - 90.f, texture, scale, renderQueue), rectangle(0, 0, _size.x, _size.y) {
 
 		time = _time;
 		size = _size;
@@ -38,7 +38,6 @@ class Animation : public Entity {
 			
 			
 			sprite.setTextureRect(rectangle);
-			target->draw(sprite);
 			animationTimer.restart();
 		}
 	}

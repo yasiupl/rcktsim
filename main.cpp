@@ -47,7 +47,7 @@ class Game {
 		sf::Vector2f startPosition;
         startPosition.x = window->getSize().x/2;
     	startPosition.y = window->getSize().y/2;
-		falcon = new Rocket(startPosition, bbox, window, &renderQueue);
+		falcon = new Rocket(startPosition, bbox, &renderQueue);
 
         renderQueue.push_back(falcon);
     }
@@ -72,17 +72,17 @@ class Game {
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num1)) {
                 
-                renderQueue.push_back(new Rocket(sf::Vector2f(sf::Mouse::getPosition(*window)), bbox, window, &renderQueue));
+                renderQueue.push_back(new Rocket(sf::Vector2f(sf::Mouse::getPosition(*window)), bbox, &renderQueue));
             } 
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num2)) {
                 
-                renderQueue.push_back(new Missle(sf::Vector2f(sf::Mouse::getPosition(*window)), 0, bbox, window, &renderQueue));
+                renderQueue.push_back(new Missle(sf::Vector2f(sf::Mouse::getPosition(*window)), 0, bbox, &renderQueue));
             }  
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num3)) {
                 
-                renderQueue.push_back(new Animation(sf::Vector2f(sf::Mouse::getPosition(*window)), (float)rand(), 0.5f, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, window, &renderQueue));
+                renderQueue.push_back(new Animation(sf::Vector2f(sf::Mouse::getPosition(*window)), (float)rand(), 0.5f, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, &renderQueue));
             }     
         }
 
@@ -113,7 +113,7 @@ class Game {
         window->clear();
 
 		for(int i = 0; i < renderQueue.size(); ++i) {
-			renderQueue[i]->draw();
+			renderQueue[i]->draw(window);
 
             if(renderQueue[i]->isDead()) {
                 delete renderQueue[i];

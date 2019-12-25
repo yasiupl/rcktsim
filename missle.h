@@ -11,7 +11,7 @@ class Missle : public Entity, public Bboxed {
         float speed = 1000;
 
     public:
-    Missle(sf::Vector2f _position, float _rotation, sf::FloatRect _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity("missle", 5, 20, _position, _rotation - 90.f, "missle.png", 0.1, _target, _renderQueue), Bboxed(_bbox) {
+    Missle(sf::Vector2f _position, float _rotation, sf::FloatRect _bbox, std::vector<Entity*> *_renderQueue) : Entity("missle", 5, 20, _position, _rotation - 90.f, "missle.png", 0.1, _renderQueue), Bboxed(_bbox) {
 
         velocity.x = cos(rotation *  3.14159265 / 180) * speed;
         velocity.y = sin(rotation *  3.14159265 / 180) * speed;
@@ -28,7 +28,7 @@ class Missle : public Entity, public Bboxed {
     }
 
     void destroy() {
-        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 0.5f, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, target, renderQueue));
+        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 0.5f, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
         stop();
     }
 

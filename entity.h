@@ -10,7 +10,6 @@ class Entity {
 		float life, damage;
 
 		std::vector<Entity*> *renderQueue;
-		sf::RenderTarget *target;
         sf::Sprite sprite;
         sf::Texture texture;
         sf::Vector2f position, velocity;
@@ -26,12 +25,12 @@ class Entity {
 		float rotation, scale;
 
 	public:
-		Entity(std::string _type, float _life, float _damage, sf::Vector2f _position, float _rotation, std::string _texture, float _scale, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) {
+		Entity(std::string _type, float _life, float _damage, sf::Vector2f _position, float _rotation, std::string _texture, float _scale, std::vector<Entity*> *_renderQueue) {
 			type = _type;
 			life = _life;
 			damage = _damage;
 			position = _position;
-        	target = _target;
+
 			renderQueue = _renderQueue;
 			scale = _scale;
 			rotation = _rotation;
@@ -52,7 +51,7 @@ class Entity {
 
 	virtual void collide(Entity *entity) = 0;
 
-	void draw() {
+	void draw(sf::RenderTarget* target) {
 		if(!dead) {
         	animate();
         	target->draw(sprite);

@@ -11,7 +11,7 @@ class Rocket : public ControllableEntity, public Bboxed {
         sf::Texture texture1;
 
     public:
-    Rocket(sf::Vector2f _position, sf::FloatRect _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : ControllableEntity("rocket", 100, 10, _position, 0, "rocket-off.png", 0.1, _target, _renderQueue), Bboxed(_bbox)  {
+    Rocket(sf::Vector2f _position, sf::FloatRect _bbox, std::vector<Entity*> *_renderQueue) : ControllableEntity("rocket", 100, 10, _position, 0, "rocket-off.png", 0.1, _renderQueue), Bboxed(_bbox)  {
         texture1.loadFromFile("rocket-on.png");
         sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
     };
@@ -19,7 +19,7 @@ class Rocket : public ControllableEntity, public Bboxed {
     void spawnMissle() {
         cooldownTime = cooldownTimer.getElapsedTime();
         if(cooldownTime.asMilliseconds() > 50.0f) {
-            renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, target, renderQueue));
+            renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, renderQueue));
             cooldownTimer.restart();
         }
 	}
@@ -80,7 +80,7 @@ class Rocket : public ControllableEntity, public Bboxed {
     }
 
     void destroy() {
-        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, target, renderQueue));
+        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
         stop();
     }
 };
