@@ -6,11 +6,15 @@
 
 class Missle : public Entity {
     protected:
-        float speed = 10;
+        float speed = 1000;
         int life, damage;
 
     public:
     Missle(sf::Vector2f _position, float _rotation, sf::Vector2f _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : Entity(_position, _rotation - 90.f, _bbox, "missle.png", 0.1, _target, _renderQueue) {
+    
+        velocity.x = cos(rotation *  3.14159265 / 180) * speed;
+        velocity.y = sin(rotation *  3.14159265 / 180) * speed;
+
     }
 
      void checkCollision() {
@@ -51,9 +55,6 @@ class Missle : public Entity {
 
     void animate() {
         animationTime = animationTimer.getElapsedTime();
-
-        velocity.x += cos(rotation *  3.14159265 / 180) * speed;
-        velocity.y += sin(rotation *  3.14159265 / 180) * speed;
         
         sprite.move(velocity.x * animationTime.asMilliseconds()/1000, velocity.y * animationTime.asMilliseconds()/1000);
 
