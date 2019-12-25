@@ -66,7 +66,7 @@ class Entity {
 	
 	bool attack(float _damage) {
         life -= _damage;
-		//std::cout << _damage << ": " << life << std::endl;
+		std::cout << life << " - " << _damage << " = " << life - _damage << std::endl;
         if (life <= 0) {
 			destroy();
             stop();

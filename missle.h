@@ -40,7 +40,7 @@ class Missle : public Entity {
     }
 
     void collide(Entity *entity) {
-        if(entity->getType() != getType())
+        if(entity->getType() == "rocket")
             entity->attack(damage);
     }
 

@@ -111,12 +111,14 @@ class Rocket : public Entity {
     }
 
     void collide(Entity *entity) {
-        entity->attack(damage);
-        sf::Vector2f colliderPosition = entity->getPosition();
-        velocity.x += (colliderPosition.x - position.x)/2;
-        velocity.y += (colliderPosition.y - position.y)/2;
-        velocity.y *= -0.1 * springiness;
-        velocity.x *= -0.1 * springiness;
+        if(entity->getType() != "explosion") {
+            entity->attack(damage);
+            sf::Vector2f colliderPosition = entity->getPosition();
+            velocity.x += (colliderPosition.x - position.x)/2;
+            velocity.y += (colliderPosition.y - position.y)/2;
+            velocity.y *= -0.1 * springiness;
+            velocity.x *= -0.1 * springiness;
+        }
     }
 
     void destroy() {

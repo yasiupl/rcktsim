@@ -113,6 +113,11 @@ class Game {
 		for(int i = 0; i < renderQueue.size(); ++i) {
 			renderQueue[i]->draw();
 
+            if(renderQueue[i]->isDead()) {
+                delete renderQueue[i];
+                renderQueue.erase(renderQueue.begin() + i);
+            } 
+
             for(int j = 0; j < renderQueue.size(); ++j) {
                 if(i != j && renderQueue[i]->getHitbox().contains(renderQueue[j]->getPosition())) {
                     if(renderQueue[i]->isDead() == false  && renderQueue[i]->getTime() > 100.f && renderQueue[j]->getTime() > 100.f) {
@@ -121,11 +126,6 @@ class Game {
                     }
                 }
             }
-
-            if(renderQueue[i]->isDead()) {
-                delete renderQueue[i];
-                renderQueue.erase(renderQueue.begin() + i);
-            } 
 		}
 
         //std::cout << renderQueue.size() << std::endl;
