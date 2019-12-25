@@ -10,8 +10,6 @@ class Rocket : public ControllableEntity, public Bboxed {
 
         sf::Texture texture1;
 
-        
-
     public:
     Rocket(sf::Vector2f _position, sf::FloatRect _bbox, sf::RenderTarget* _target, std::vector<Entity*> *_renderQueue) : ControllableEntity("rocket", 100, 10, _position, 0, "rocket-off.png", 0.1, _target, _renderQueue), Bboxed(_bbox)  {
         texture1.loadFromFile("rocket-on.png");
@@ -71,7 +69,7 @@ class Rocket : public ControllableEntity, public Bboxed {
     }
 
     void collide(Entity *entity) {
-        if(entity->getType() != "explosion") {
+        if(entity->getType() != "animation") {
             entity->attack(damage);
             sf::Vector2f colliderPosition = entity->getPosition();
             velocity.x += (colliderPosition.x - position.x)/2;
@@ -82,7 +80,7 @@ class Rocket : public ControllableEntity, public Bboxed {
     }
 
     void destroy() {
-        renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), 2, target, renderQueue));
+        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, target, renderQueue));
         stop();
     }
 };

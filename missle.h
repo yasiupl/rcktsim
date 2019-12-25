@@ -1,7 +1,7 @@
 #pragma once
 #include <math.h>
 #include "entity.h"
-#include "explosion.h"
+#include "animation.h"
 #include "bboxed.h"
 
 
@@ -28,7 +28,7 @@ class Missle : public Entity, public Bboxed {
     }
 
     void destroy() {
-        renderQueue->push_back(new Explosion(sprite.getPosition(), sprite.getRotation(), 0.5, target, renderQueue));
+        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 0.5f, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, target, renderQueue));
         stop();
     }
 

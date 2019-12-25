@@ -82,7 +82,7 @@ class Game {
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num3)) {
                 
-                renderQueue.push_back(new Explosion(sf::Vector2f(sf::Mouse::getPosition(*window)), 0, 0.5, window, &renderQueue));
+                renderQueue.push_back(new Animation(sf::Vector2f(sf::Mouse::getPosition(*window)), (float)rand(), 0.5f, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, window, &renderQueue));
             }     
         }
 
