@@ -7,19 +7,22 @@
 
 class Missle : public Entity, public Bboxed {
     protected:
-        bool collidable = false;
+        bool bounded = false;
+        float time = 0;
         float speed = 1000;
 
     public:
+    Missle(sf::Vector2f _position, float _rotation, float _time, std::vector<Entity*> *_renderQueue) : Entity("missle", 5, 20, _position, _rotation - 90.f, "missle.png", 0.1, _renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
+        time = _time;
+    }
     Missle(sf::Vector2f _position, float _rotation, sf::FloatRect _bbox, std::vector<Entity*> *_renderQueue) : Entity("missle", 5, 20, _position, _rotation - 90.f, "missle.png", 0.1, _renderQueue), Bboxed(_bbox) {
-
-        velocity.x = cos(rotation *  3.14159265 / 180) * speed;
-        velocity.y = sin(rotation *  3.14159265 / 180) * speed;
-
+        bounded = true;
     }
 
      void checkBoundries() {
-        if(!bbox.contains(sprite.getPosition())) destroy();
+        if(bounded) {
+            if(!bbox.contains(sprite.getPosition())) destroy();
+        } else if(getTime() > time) destroy();
     }
 
     void collide(Entity *entity) {
@@ -35,8 +38,11 @@ class Missle : public Entity, public Bboxed {
     void animate() {
         animationTime = animationTimer.getElapsedTime();
 
-        sprite.move(velocity.x * animationTime.asMilliseconds()/1000, velocity.y * animationTime.asMilliseconds()/1000);
+        velocity.x = cos(rotation *  3.14159265 / 180) * speed;
+        velocity.y = sin(rotation *  3.14159265 / 180) * speed;
 
+        sprite.move(velocity.x * animationTime.asMilliseconds()/1000, velocity.y * animationTime.asMilliseconds()/1000);
+    
         checkBoundries();
 
         animationTimer.restart();

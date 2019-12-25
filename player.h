@@ -1,67 +1,51 @@
 #pragma once
-#include "missle.h"
+#include "rocket.h"
+#include "bboxed.h"
 
-class Rocket: public Entity {
+class Player : public Rocket,  public Bboxed {
 
     protected:
-		float rotationSpeed = 250;
-        bool engineOn = false;
-        float throttle = 0.3;
-        float throttleStep = 1;
-        float engineISP = 10;
-		sf::Vector2i lookAtPoint;
         float springiness = 0.5;
-		
         sf::Texture texture1;
 
     public:
-    Rocket(std::string type, float life, float damage, sf::Vector2f position, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, 0, "rocket-off.png", 0.1, renderQueue)  {
+    Player(sf::Vector2f _position, sf::FloatRect _bbox, std::vector<Entity*> *_renderQueue) : Rocket("rocket", 100, 10, _position, _renderQueue), Bboxed(_bbox)  {
         texture1.loadFromFile("rocket-on.png");
         sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
     };
 
-	void throttleUp() {
-        if(throttle < 1) {
-            throttle += throttleStep * animationTime.asMilliseconds()/1000;
-        }
-    }
-
-    void throttleDown() {
-        if(throttle > 0.3) {
-            throttle -= throttleStep * animationTime.asMilliseconds()/1000;
-        }
-    }
-    void throttleToggle() {
-        if(engineOn == true) {
-            engineOn = false;
-        } else {
-            engineOn = true;
-        }
-    }
-
-    void rotateClockwise() {
-        rotation -= rotationSpeed * animationTime.asMilliseconds()/1000;
-    }
-    void rotateCounterClockwise() {
-        rotation += rotationSpeed * animationTime.asMilliseconds()/1000;
-    }
-
-    void lookAt(sf::Vector2i point) {
-        if(point != lookAtPoint) {
-            position = sprite.getPosition();
-            rotation = (atan2(point.y - position.y, point.x - position.x) - 80.f) * 180 / 3.14159265;
-            lookAtPoint = point;
-        }
-    }
-
     void spawnMissle() {
         cooldownTime = cooldownTimer.getElapsedTime();
         if(cooldownTime.asMilliseconds() > 50.0f) {
-            renderQueue->push_back(new Missle(getPosition(), getRotation(), 10000, renderQueue));
+            renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, renderQueue));
             cooldownTimer.restart();
         }
 	}
-	
+ 
+    void checkBoundries() {
+        position = sprite.getPosition();
+        if(!bbox.contains(position)) {
+            if(position.x <= bbox.left) {
+                position.x = bbox.left;
+                velocity.x *= -1 * springiness;
+            }
+            if(position.y <= bbox.top) {
+                position.y = bbox.top;
+                velocity.y *= -1 * springiness;
+            }
+            if(position.x >= (bbox.width - bbox.left)) {
+                position.x = (bbox.width - bbox.left);
+                velocity.x *= -1 * springiness;
+            }
+            if(position.y >= (bbox.height - bbox.top)) {
+                position.y = (bbox.height - bbox.top);
+                velocity.y *= -1 * springiness;
+            }
+            sprite.setPosition(position);
+        }
+        //std::cout<<position.x << ", " << position.y << ": " << velocity.x << ", " << velocity.y << std::endl;
+    }
+ 
     void animate() {
         animationTime = animationTimer.getElapsedTime();
 
@@ -76,6 +60,8 @@ class Rocket: public Entity {
         } else sprite.setTexture(texture);
         
         sprite.move(velocity.x, velocity.y);
+
+        checkBoundries();
 
         animationTimer.restart();
     }

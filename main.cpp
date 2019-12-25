@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "missle.h"
-#include "rocket.h"
+#include "player.h"
 
 
 #define MAX_FPS 6000
@@ -30,7 +30,7 @@ class Window {
 class Game {
     private:
     bool running = 1;
-	Rocket *falcon;
+	Player *falcon;
 	sf::RenderWindow *window;
 	sf::FloatRect bbox;
 	std::vector<Entity*> renderQueue;
@@ -47,7 +47,7 @@ class Game {
 		sf::Vector2f startPosition;
         startPosition.x = window->getSize().x/2;
     	startPosition.y = window->getSize().y/2;
-		falcon = new Rocket(startPosition, bbox, &renderQueue);
+		falcon = new Player(startPosition, bbox, &renderQueue);
 
         renderQueue.push_back(falcon);
     }
@@ -72,7 +72,7 @@ class Game {
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num1)) {
                 
-                renderQueue.push_back(new Rocket(sf::Vector2f(sf::Mouse::getPosition(*window)), bbox, &renderQueue));
+                renderQueue.push_back(new Rocket("target", 0, 30, sf::Vector2f(sf::Mouse::getPosition(*window)), &renderQueue));
             } 
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num2)) {
@@ -153,7 +153,6 @@ int main()
 	Game game(window.getTarget());
 
 	game.loop();
-
 
     return 0;
 };
