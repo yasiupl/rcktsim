@@ -1,10 +1,11 @@
 build: ## Build the binary
-	g++ -c main.cpp
-	g++ main.o -o rcktsim.out -lsfml-graphics -lsfml-window -lsfml-system
+	g++ -g -lsfml-graphics -lsfml-window -lsfml-system -o rcktsim.out main.cpp
 	
 run: build ## Build and run the binary
 	./rcktsim.out
 
+debug: build
+	gdb ./rcktsim.out
 
 .PHONY: help
 help: ## Print this message
