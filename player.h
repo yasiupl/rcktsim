@@ -5,23 +5,15 @@
 class Player : public Rocket,  public Bboxed {
 
     protected:
-        float springiness = 0.5;
-        sf::Texture texture1;
+        std::string name;
+        float rotationSpeed = 250;
+        float throttleStep = 1;
 
     public:
-    Player(sf::Vector2f _position, sf::FloatRect _bbox, std::vector<Entity*> *_renderQueue) : Rocket("rocket", 100, 10, _position, _renderQueue), Bboxed(_bbox)  {
-        texture1.loadFromFile("rocket-on.png");
-        sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
+    Player(std::string _name, sf::Vector2f position, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Rocket(_name, 100, 10, position, renderQueue), Bboxed(bbox)  {
+        name = _name;
     };
 
-    void spawnMissle() {
-        cooldownTime = cooldownTimer.getElapsedTime();
-        if(cooldownTime.asMilliseconds() > 50.0f) {
-            renderQueue->push_back(new Missle(getPosition(), getRotation(), bbox, renderQueue));
-            cooldownTimer.restart();
-        }
-	}
- 
     void checkBoundries() {
         position = sprite.getPosition();
         if(!bbox.contains(position)) {
@@ -45,40 +37,25 @@ class Player : public Rocket,  public Bboxed {
         }
         //std::cout<<position.x << ", " << position.y << ": " << velocity.x << ", " << velocity.y << std::endl;
     }
- 
-    void animate() {
-        animationTime = animationTimer.getElapsedTime();
-
-        //sprite.setRotation(atan(velocity.y/velocity.x) * 180 / 3.14159265);
-        //sprite.rotate(((velocity.x > 0)? 1 : -1) * 90.f);
-        sprite.setRotation(rotation);
-
-        if(engineOn) {
-            sprite.setTexture(texture1);
-            velocity.x += cos((sprite.getRotation() - 90.f) *  3.14159265 / 180) * engineISP * throttle * animationTime.asMilliseconds()/1000;
-            velocity.y += sin((sprite.getRotation() - 90.f) *  3.14159265 / 180) * engineISP * throttle * animationTime.asMilliseconds()/1000;
-        } else sprite.setTexture(texture);
+    void throttleUp() {
+        setThrottle(throttle + throttleStep * animationTime.asMilliseconds()/1000);
         
-        sprite.move(velocity.x, velocity.y);
+    }
 
+    void throttleDown() {
+        setThrottle(throttle - throttleStep * animationTime.asMilliseconds()/1000);
+        
+    }
+
+    void rotateClockwise() {
+        rotation -= rotationSpeed * animationTime.asMilliseconds()/1000;
+    }
+    void rotateCounterClockwise() {
+        rotation += rotationSpeed * animationTime.asMilliseconds()/1000;
+    }
+	
+	void animate() {
+        Rocket::animate();
         checkBoundries();
-
-        animationTimer.restart();
-    }
-
-    void collide(Entity *entity) {
-        if(entity->getType() != "animation") {
-            entity->attack(damage);
-            sf::Vector2f colliderPosition = entity->getPosition();
-            velocity.x += (colliderPosition.x - position.x)/2;
-            velocity.y += (colliderPosition.y - position.y)/2;
-            velocity.y *= -0.1 * springiness;
-            velocity.x *= -0.1 * springiness;
-        }
-    }
-
-    void destroy() {
-        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
-        stop();
     }
 };

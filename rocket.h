@@ -4,15 +4,13 @@
 class Rocket: public Entity {
 
     protected:
-		float rotationSpeed = 250;
-        bool engineOn = false;
-        float throttle = 0.3;
-        float throttleStep = 1;
-        float engineISP = 10;
-		sf::Vector2i lookAtPoint;
-        float springiness = 0.5;
-		
+		bool engineOn = false;
+		float springiness = 0.5;
+		float throttle = 0.3;
+		float engineISP = 10;
         sf::Texture texture1;
+
+        Entity *closestEntity;
 
     public:
     Rocket(std::string type, float life, float damage, sf::Vector2f position, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, 0, "rocket-off.png", 0.1, renderQueue)  {
@@ -20,18 +18,7 @@ class Rocket: public Entity {
         sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
     };
 
-	void throttleUp() {
-        if(throttle < 1) {
-            throttle += throttleStep * animationTime.asMilliseconds()/1000;
-        }
-    }
-
-    void throttleDown() {
-        if(throttle > 0.3) {
-            throttle -= throttleStep * animationTime.asMilliseconds()/1000;
-        }
-    }
-    void throttleToggle() {
+	void throttleToggle() {
         if(engineOn == true) {
             engineOn = false;
         } else {
@@ -39,35 +26,22 @@ class Rocket: public Entity {
         }
     }
 
-    void rotateClockwise() {
-        rotation -= rotationSpeed * animationTime.asMilliseconds()/1000;
-    }
-    void rotateCounterClockwise() {
-        rotation += rotationSpeed * animationTime.asMilliseconds()/1000;
-    }
-
-    void lookAt(sf::Vector2i point) {
-        if(point != lookAtPoint) {
-            position = sprite.getPosition();
-            rotation = (atan2(point.y - position.y, point.x - position.x) - 80.f) * 180 / 3.14159265;
-            lookAtPoint = point;
-        }
-    }
+	void setThrottle(float _throttle) {
+		if(_throttle > 0.3 && _throttle <= 1) throttle = _throttle;
+	}
 
     void spawnMissle() {
         cooldownTime = cooldownTimer.getElapsedTime();
         if(cooldownTime.asMilliseconds() > 50.0f) {
-            renderQueue->push_back(new Missle(getPosition(), getRotation(), 10000, renderQueue));
+            renderQueue->push_back(new Missle(Rocket::getType(), 0, 30, Rocket::getPosition(), Rocket::getRotation(), 5000, renderQueue));
             cooldownTimer.restart();
         }
 	}
-	
-    void animate() {
-        animationTime = animationTimer.getElapsedTime();
 
-        //sprite.setRotation(atan(velocity.y/velocity.x) * 180 / 3.14159265);
-        //sprite.rotate(((velocity.x > 0)? 1 : -1) * 90.f);
-        sprite.setRotation(rotation);
+	void animate() {
+		animationTime = animationTimer.getElapsedTime();
+
+        sprite.setRotation(rotation + 90.f);
 
         if(engineOn) {
             sprite.setTexture(texture1);
@@ -78,10 +52,10 @@ class Rocket: public Entity {
         sprite.move(velocity.x, velocity.y);
 
         animationTimer.restart();
-    }
-
+	};
+	
     void collide(Entity *entity) {
-        if(entity->getType() != "animation") {
+        if(entity->getType() != Rocket::getType()) {
             entity->attack(damage);
             sf::Vector2f colliderPosition = entity->getPosition();
             velocity.x += (colliderPosition.x - position.x)/2;

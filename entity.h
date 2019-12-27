@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <math.h>
 
 class Entity {
 	protected:
@@ -62,6 +63,16 @@ class Entity {
 		dead = true;
 	}
 	
+	void lookAt(sf::Vector2f point) {
+		position = sprite.getPosition();
+		rotation = (atan2(point.y - position.y, point.x - position.x)) * 180 / 3.14159265;
+    }
+
+	float distanceTo(sf::Vector2f distant) {
+		position = sprite.getPosition();
+		return sqrt(pow(distant.x - position.x, 2) + pow(position.y - distant.x, 2));
+	}
+
 	bool attack(float _damage) {
         life -= _damage;
 		//std::cout << life << " - " << _damage << " = " << life - _damage << std::endl;

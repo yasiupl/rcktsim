@@ -12,21 +12,21 @@ class Missle : public Entity, public Bboxed {
         float speed = 1000;
 
     public:
-    Missle(sf::Vector2f _position, float _rotation, float _time, std::vector<Entity*> *_renderQueue) : Entity("missle", 5, 20, _position, _rotation - 90.f, "missle.png", 0.1, _renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
+    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, float _time, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "missle.png", 0.1, renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
         time = _time;
     }
-    Missle(sf::Vector2f _position, float _rotation, sf::FloatRect _bbox, std::vector<Entity*> *_renderQueue) : Entity("missle", 5, 20, _position, _rotation - 90.f, "missle.png", 0.1, _renderQueue), Bboxed(_bbox) {
+    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "missle.png", 0.1, renderQueue), Bboxed(bbox) {
         bounded = true;
     }
 
-     void checkBoundries() {
+    void checkBoundries() {
         if(bounded) {
             if(!bbox.contains(sprite.getPosition())) destroy();
         } else if(getTime() > time) destroy();
     }
 
     void collide(Entity *entity) {
-        if(entity->getType() != getType())
+        if(entity->getType() != getType() && entity->getTime() > 100.f && Missle::getTime() > 100.f)
             entity->attack(damage);
     }
 
@@ -36,11 +36,13 @@ class Missle : public Entity, public Bboxed {
     }
 
     void animate() {
+
         animationTime = animationTimer.getElapsedTime();
 
         velocity.x = cos(rotation *  3.14159265 / 180) * speed;
         velocity.y = sin(rotation *  3.14159265 / 180) * speed;
 
+        sprite.setRotation(rotation);
         sprite.move(velocity.x * animationTime.asMilliseconds()/1000, velocity.y * animationTime.asMilliseconds()/1000);
     
         checkBoundries();
