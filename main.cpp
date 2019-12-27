@@ -6,7 +6,7 @@
 #include "enemy.h"
 
 
-#define MAX_FPS 6000
+#define MAX_FPS 60
 
 class Window {
 	private:
@@ -128,7 +128,6 @@ class Game {
 
             if(renderQueue[i]->isDead()) {
                 delete renderQueue[i];
-                renderQueue[i] = NULL;
                 renderQueue.erase(renderQueue.begin() + i);
             } 
 
