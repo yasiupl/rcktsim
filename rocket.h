@@ -13,8 +13,8 @@ class Rocket: public Entity {
         Entity *closestEntity;
 
     public:
-    Rocket(std::string type, float life, float damage, sf::Vector2f position, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, 0, "rocket-off.png", 0.1, renderQueue)  {
-        texture1.loadFromFile("rocket-on.png");
+    Rocket(std::string type, float life, float damage, sf::Vector2f position, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, 0, "assets/sprites/rocket-off.png", 0.1, renderQueue)  {
+        texture1.loadFromFile("assets/sprites/rocket-on.png");
         sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
     };
 
@@ -66,7 +66,7 @@ class Rocket: public Entity {
     }
 
     void destroy() {
-        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
+        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "assets/sprites/explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
         stop();
     }
 };

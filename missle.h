@@ -12,10 +12,10 @@ class Missle : public Entity, public Bboxed {
         float speed = 1000;
 
     public:
-    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, float _time, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "missle.png", 0.1, renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
+    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, float _time, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
         time = _time;
     }
-    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "missle.png", 0.1, renderQueue), Bboxed(bbox) {
+    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(bbox) {
         bounded = true;
     }
 
@@ -31,7 +31,7 @@ class Missle : public Entity, public Bboxed {
     }
 
     void destroy() {
-        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 0.5f, "explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
+        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 0.5f, "assets/sprites/explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
         stop();
     }
 
