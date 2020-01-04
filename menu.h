@@ -21,9 +21,9 @@ class Menu: public App {
 		size = parent->size;
 		font.loadFromFile("assets/fonts/pixelated.ttf");
 	}
-	Menu(sf::Vector2f _size, sf::RenderWindow *window) : App(window) {
+	Menu( sf::RenderWindow *window) : App(window) {
 		parent = this;
-		size = _size;
+		size = sf::Vector2f(window->getSize());
 		font.loadFromFile("assets/fonts/pixelated.ttf");
 	}
 
@@ -56,13 +56,19 @@ class Menu: public App {
 		option.setFont(font);	
 		option.setFillColor(sf::Color::White);
 		option.setString(name);
+		
+		sf::FloatRect textRect = option.getLocalBounds();
+		option.setOrigin(textRect.width/2,textRect.height/2);
+
 		options.push_back(option);
 		callbacks.push_back(callback);
 
 		for(int i = 0; i < options.size(); ++i) {
-			options[i].setPosition(sf::Vector2f(size.y / 2, size.x * i / options.size()));
+			options[i].setPosition(sf::Vector2f(size.x / 2, (size.y / 2) - (options.size() * textRect.height * 2)/2 + textRect.height * 2 * i));
 		}	
 	}
+	
+	private:
 
 	void selectUp() {
 		if(selected - 1 >= 0) {
@@ -83,6 +89,8 @@ class Menu: public App {
 
 	void draw() {
 		window->clear();
+
+		
 
 		for(int i = 0; i < options.size(); ++i) {
 			if(i == selected) {
