@@ -12,7 +12,7 @@ class Window {
 
     public:
     Window(float x, float y, std::string name, int fps) {
-        window = new sf::RenderWindow(sf::VideoMode(x, y), "rcktsim 0.0.0b2");
+        window = new sf::RenderWindow(sf::VideoMode(x, y), name, sf::Style::Fullscreen);
         window->setFramerateLimit(fps);
 	}
 
@@ -32,9 +32,9 @@ class Window {
 
 int main()
 {
-	Window window(500, 1000, "new game", MAX_FPS);
-
-    Menu menu(sf::Vector2f(200, 200), window.getTarget());
+	Window window(720, 480, "new game", MAX_FPS);
+    
+    Menu menu(window.getTarget());
     menu.addOption("Play", [](sf::RenderWindow* window, Menu *parent) 
     { 
         Game game(window);
