@@ -14,6 +14,10 @@ class Game: public App {
 
     sf::Vector2i mouse;
 
+    sf::Clock gameTimer;
+    int gameTime;
+    int lastWave = 0;
+
     public:
     Game(sf::RenderWindow *window) : App(window) {
     	bbox.left = 0;
@@ -93,6 +97,16 @@ class Game: public App {
 	};
 
 	void draw() {
+        gameTime = gameTimer.getElapsedTime().asMilliseconds();
+
+        if(gameTime - lastWave > 2000) {
+            Rocket *enemy = new Rocket("enemy", 25 * (gameTime / 10000) + 1, 10, sf::Vector2f(0, 0), &renderQueue);
+            enemy->lookAt(sf::Vector2f(window->getSize().x/2,window->getSize().y/2));
+            enemy->throttleToggle();
+            renderQueue.push_back(enemy);
+            lastWave = gameTime;
+        }
+
         window->clear();
 
 		for(int i = 0; i < renderQueue.size(); ++i) {
