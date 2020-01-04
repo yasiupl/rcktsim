@@ -55,7 +55,7 @@ class Rocket: public Entity {
 	};
 	
     void collide(Entity *entity) {
-        if(entity->getType() != Rocket::getType()) {
+        if(entity->getType() != Rocket::getType() && entity->getType() != "animation") {
             entity->attack(damage);
             sf::Vector2f colliderPosition = entity->getPosition();
             velocity.x += (colliderPosition.x - position.x)/2;

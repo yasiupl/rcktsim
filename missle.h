@@ -26,7 +26,7 @@ class Missle : public Entity, public Bboxed {
     }
 
     void collide(Entity *entity) {
-        if(entity->getType() != getType() && entity->getTime() > 100.f && Missle::getTime() > 100.f)
+        if(entity->getType() != getType() && entity->getTime() > 100.f && Missle::getTime() > 100.f && entity->getType() != "animation")
             entity->attack(damage);
     }
 
