@@ -1,6 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+// App takes input from the user and maps it to the screen via the draw function.
+// There are 2 "apps" in this project so far: Menu and Game itself.
+
 class App {
 	protected:
 	sf::RenderWindow *window;

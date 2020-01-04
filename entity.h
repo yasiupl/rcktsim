@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <math.h>
 
+// Entity is the base element of the gameplay. It is a Sprite on steroids with defined behaviour for collisons, and the flow of time.
+
 class Entity {
 	protected:
 		bool dead = false;
