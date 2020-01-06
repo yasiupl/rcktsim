@@ -7,6 +7,8 @@ class Menu: public App {
 	Menu *parent;
 
 	sf::Font font;
+	sf::Sprite logo;
+	sf::Texture logoTexture;
 	sf::Vector2f size;
 
 	std::vector<sf::Text> options;
@@ -20,11 +22,13 @@ class Menu: public App {
 		parent = _parent;
 		size = parent->size;
 		font.loadFromFile("assets/fonts/pixelated.ttf");
+		setupLogo();
 	}
 	Menu( sf::RenderWindow *window) : App(window) {
 		parent = this;
 		size = sf::Vector2f(window->getSize());
 		font.loadFromFile("assets/fonts/pixelated.ttf");
+		setupLogo();
 	}
 
 	void consumeInput() {
@@ -70,6 +74,14 @@ class Menu: public App {
 	
 	private:
 
+	void setupLogo() {
+		logoTexture.loadFromFile("assets/logo.png");
+		logo.setTexture(logoTexture);
+		sf::FloatRect logoRect = logo.getLocalBounds();
+		logo.setOrigin(logoRect.width/2,logoRect.height/2);
+		logo.setPosition(size.x/2, size.y/3);
+	}
+
 	void selectUp() {
 		if(selected - 1 >= 0) {
 			selected -= 1;
@@ -90,7 +102,7 @@ class Menu: public App {
 	void draw() {
 		window->clear();
 
-		
+		window->draw(logo);
 
 		for(int i = 0; i < options.size(); ++i) {
 			if(i == selected) {
