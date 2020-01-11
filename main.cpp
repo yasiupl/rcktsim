@@ -35,32 +35,25 @@ int main()
 	Window window(720, 480, "new game", MAX_FPS);
     
     Menu menu(window.getTarget());
-    menu.addOption("Play", [](sf::RenderWindow* window, Menu *parent) 
+    menu.addOption("Play", [](App *_this, App *parent) 
     { 
-        Game game(window);
+        Game game(_this);
         game.loop();
     });
 
-    menu.addOption("Nested", [](sf::RenderWindow* window, Menu *parent) 
+    menu.addOption("Exit Game", [](App *_this, App *parent) 
     { 
-        Menu menu1(parent, window);
-        menu1.addOption("Exit Game", [](sf::RenderWindow* window, Menu *parent) 
+        Menu menu1(parent);
+        menu1.addOption("Confirm", [](App *_this, App *parent) 
         { 
-            window->close();
         });
-        menu1.addOption("Go Back", [](sf::RenderWindow* window, Menu *parent) 
+        menu1.addOption("Go Back", [](App *_this, App *parent) 
         { 
             parent->activate();
         });
         menu1.loop();
     });
-
-    menu.addOption("Exit", [](sf::RenderWindow* window, Menu *menu) 
-    { 
-        window->close();
-    });
     
-
     menu.loop();
     
 

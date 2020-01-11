@@ -10,7 +10,7 @@ class Entity {
 
 		std::string type;
 
-		float life, damage;
+		float life, damage, mass = 1;
 
 		std::vector<Entity*> *renderQueue;
         sf::Sprite sprite;
@@ -105,9 +105,20 @@ class Entity {
 	sf::Vector2f getPosition() {
         return sprite.getPosition();
     } 
+	sf::Vector2f getVelocity() {
+        return velocity;
+    } 
+
+	void addVelocity(sf::Vector2f _velocity) {
+		velocity += _velocity;
+	}
 
 	float getRotation() {
 		return sprite.getRotation();
+	}
+
+	float getMass() {
+		return mass;
 	}
 
 	sf::Rect<float> getHitbox() {

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "app.h"
+#include "menu.h"
 #include "missle.h"
 #include "player.h"
 #include "enemy.h"
@@ -19,7 +20,7 @@ class Game: public App {
     int lastWave = 0;
 
     public:
-    Game(sf::RenderWindow *window) : App(window) {
+    Game(App *menu) : App(menu->getWindow()) {
     	bbox.left = 0;
     	bbox.top = 0;
         bbox.width = (float)window->getSize().x;
@@ -31,6 +32,8 @@ class Game: public App {
 		falcon = new Player("player1", startPosition, bbox, &renderQueue);
 
         renderQueue.push_back(falcon);
+
+        this->setSize(sf::Vector2f(window->getSize()));
     }
 
 	void consumeInput() {
@@ -89,6 +92,44 @@ class Game: public App {
         {
             falcon->rotateCounterClockwise();
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+            this->stop();
+            Menu pause_menu(this);
+            pause_menu.addOption("Resume", [](App *_this, App *parent) 
+            { 
+                parent->activate();
+            });
+
+            pause_menu.addOption("Exit", [](App *_this, App *parent) 
+            { 
+                Menu confirmation(parent);
+                confirmation.addOption("Confirm", [](App *_this, App *parent) 
+                {
+                    _this->getWindow()->close();
+                });
+                confirmation.addOption("Go Back", [](App *_this, App *parent) 
+                { 
+                    parent->activate();
+                });
+                confirmation.loop();
+            });
+            pause_menu.loop();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
+        {
+            this->stop();
+            Menu f1_menu(this);
+            f1_menu.addOption("Resume", [](App *_this, App *parent) 
+            { 
+                parent->activate();
+            });
+
+            f1_menu.addOption("Lorem ipsum dolor sit amet. \n lol");
+            
+            f1_menu.loop();
+        }
+
         sf::Vector2i point = sf::Mouse::getPosition(*window);
         if(point != mouse) {
             falcon->lookAt(sf::Vector2f(point));

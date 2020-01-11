@@ -10,8 +10,9 @@ class Player : public Rocket,  public Bboxed {
         float throttleStep = 1;
 
     public:
-    Player(std::string _name, sf::Vector2f position, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Rocket(_name, 100, 10, position, renderQueue), Bboxed(bbox)  {
+    Player(std::string _name, sf::Vector2f position, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Rocket(_name, 1000, 0, position, renderQueue), Bboxed(bbox)  {
         name = _name;
+        mass = 1000;
     };
 
     void checkBoundries() {

@@ -16,6 +16,7 @@ class Rocket: public Entity {
     Rocket(std::string type, float life, float damage, sf::Vector2f position, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, 0, "assets/sprites/rocket-off.png", 0.1, renderQueue)  {
         texture1.loadFromFile("assets/sprites/rocket-on.png");
         sprite.setOrigin(texture.getSize().x /2, texture.getSize().y /1.5);
+        mass = 500;
     };
 
 	void throttleToggle() {
@@ -57,11 +58,15 @@ class Rocket: public Entity {
     void collide(Entity *entity) {
         if(entity->getType() != Rocket::getType() && entity->getType() != "animation") {
             entity->attack(damage);
+            
+            float colliderMass = entity->getMass();
             sf::Vector2f colliderPosition = entity->getPosition();
-            velocity.x += (colliderPosition.x - position.x)/2;
-            velocity.y += (colliderPosition.y - position.y)/2;
-            velocity.y *= -0.1 * springiness;
-            velocity.x *= -0.1 * springiness;
+            sf::Vector2f colliderVelocity = entity->getVelocity();
+            sf::Vector2f DeltaPosition = colliderPosition - position;
+            sf::Vector2f DeltaVelocity = colliderVelocity - velocity;
+
+            //calculation of new velocities:
+            velocity += (colliderMass / (mass + colliderMass)) * (float)(((DeltaVelocity.x * DeltaPosition.x) + (DeltaVelocity.y * DeltaPosition.y)) / (pow((DeltaPosition.x), 2) + pow((DeltaPosition.y), 2))) * DeltaPosition;
         }
     }
 

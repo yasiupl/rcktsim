@@ -4,31 +4,28 @@
 
 class Menu: public App {
 	protected:
-	Menu *parent;
+	App *parent;
 
 	sf::Font font;
 	sf::Sprite logo;
 	sf::Texture logoTexture;
-	sf::Vector2f size;
 
 	std::vector<sf::Text> options;
-	std::vector<void (*)(sf::RenderWindow*, Menu*)> callbacks;
+	std::vector<void (*)(App*, App*)> callbacks;
 
 	int selected = 0;
 
 
 	public:
-	Menu(Menu *_parent, sf::RenderWindow *window) : App(window) {
+	Menu(App *_parent) : App(_parent->getWindow()) {
 		parent = _parent;
-		size = parent->size;
-		font.loadFromFile("assets/fonts/pixelated.ttf");
-		setupLogo();
+		this->setSize(parent->getSize());
+		setup();
 	}
-	Menu( sf::RenderWindow *window) : App(window) {
+	Menu(sf::RenderWindow *window) : App(window) {
 		parent = this;
-		size = sf::Vector2f(window->getSize());
-		font.loadFromFile("assets/fonts/pixelated.ttf");
-		setupLogo();
+		this->setSize(sf::Vector2f(window->getSize()));
+		setup();
 	}
 
 	void consumeInput() {
@@ -41,21 +38,26 @@ class Menu: public App {
                 stop();
                 window->close();
             }
-
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::W)) {
-                selectUp();
-            }   
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::S)) {
-                selectDown();
-            }     
-			 if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Enter)) {
-                select();
-            }   
+			if((event.type == sf::Event::KeyPressed)) {
+				if ((event.key.code == sf::Keyboard::W) || (event.key.code == sf::Keyboard::Up)) {
+					selectUp();
+				}   
+				if ((event.key.code == sf::Keyboard::S) || (event.key.code == sf::Keyboard::Down)) {
+					selectDown();
+				}     
+				if ((event.key.code == sf::Keyboard::Enter) || (event.key.code == sf::Keyboard::Space)) {
+					select();
+				}   
+				if ((event.key.code == sf::Keyboard::Escape)) {
+					this->stop();
+					parent->activate();
+				} 
+			}
         }
 	};
 
 
-	void addOption(std::string name, void (*callback)(sf::RenderWindow*, Menu*)) {
+	void addOption(std::string name, void (*callback)(App*, App*)) {
 		sf::Text option;
 		option.setFont(font);	
 		option.setFillColor(sf::Color::White);
@@ -71,10 +73,28 @@ class Menu: public App {
 			options[i].setPosition(sf::Vector2f(size.x / 2, (size.y / 2) - (options.size() * textRect.height * 2)/2 + textRect.height * 2 * i));
 		}	
 	}
+
+	void addOption(std::string name) {
+		sf::Text option;
+		option.setFont(font);	
+		option.setFillColor(sf::Color::White);
+		option.setString(name);
+		
+		sf::FloatRect textRect = option.getLocalBounds();
+		option.setOrigin(textRect.width/2,textRect.height/2);
+
+		options.push_back(option);
+		callbacks.push_back([](App *menu, App *parent) {menu->activate();});
+
+		for(int i = 0; i < options.size(); ++i) {
+			options[i].setPosition(sf::Vector2f(size.x / 2, (size.y / 2) - (options.size() * textRect.height * 2)/2 + textRect.height * 2 * i));
+		}	 
+	}
 	
 	private:
 
-	void setupLogo() {
+	void setup() {
+		font.loadFromFile("assets/fonts/pixelated.ttf");
 		logoTexture.loadFromFile("assets/logo.png");
 		logo.setTexture(logoTexture);
 		sf::FloatRect logoRect = logo.getLocalBounds();
@@ -95,7 +115,7 @@ class Menu: public App {
 	}
 
 	void select() {
-		callbacks[selected](window, parent);
+		callbacks[selected](this, parent);
 		stop();
 	}
 

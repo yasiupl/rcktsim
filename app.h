@@ -6,6 +6,7 @@
 
 class App {
 	protected:
+	sf::Vector2f size;
 	sf::RenderWindow *window;
 	bool active = true;
 
@@ -38,6 +39,18 @@ class App {
 
 	void stop() {
 		active = false;
+	}
+
+	void setSize(sf::Vector2f _size) {
+		size = _size;
+	}
+
+	sf::Vector2f getSize() {
+		return size;
+	}
+
+	sf::RenderWindow *getWindow() {
+		return window;
 	}
 
 	virtual void draw() = 0;
