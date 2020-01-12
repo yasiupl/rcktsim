@@ -7,10 +7,13 @@
 class Entity {
 	protected:
 		bool dead = false;
+		bool active = true;
 
+		int score = 0;
+		
 		std::string type;
 
-		float life, damage, mass = 1;
+		float maxLife, life, damage, rotation, scale, mass = 1;
 
 		std::vector<Entity*> *renderQueue;
         sf::Sprite sprite;
@@ -25,11 +28,12 @@ class Entity {
 
 		sf::Clock lifeTimer;
 
-		float rotation, scale;
+		sf::Time pauseTime;
 
 	public:
 		Entity(std::string _type, float _life, float _damage, sf::Vector2f _position, float _rotation, std::string _texture, float _scale, std::vector<Entity*> *_renderQueue) {
 			type = _type;
+			maxLife = _life;
 			life = _life;
 			damage = _damage;
 			position = _position;
@@ -55,30 +59,39 @@ class Entity {
 	virtual void collide(Entity *entity) = 0;
 
 	void draw(sf::RenderTarget* target) {
-		if(!dead) {
+		if(active == true) {
+			animationTime = animationTimer.getElapsedTime() - pauseTime;
+			pauseTime = pauseTime.Zero;
         	animate();
-        	target->draw(sprite);
-		}
+		} else animationTimer.restart();
+		target->draw(sprite);
     }
+
+	void resume() {
+		pauseTime = animationTimer.getElapsedTime();
+		active = true;
+	}
+
+	void pause() {
+		active = false;
+	}
 
 	void stop() {
 		dead = true;
+		active = false;
 	}
-	
-	void lookAt(sf::Vector2f point) {
-		position = sprite.getPosition();
-		rotation = (atan2(point.y - position.y, point.x - position.x)) * 180 / 3.14159265;
-    }
+
 
 	float distanceTo(sf::Vector2f distant) {
 		position = sprite.getPosition();
 		return sqrt(pow(distant.x - position.x, 2) + pow(position.y - distant.x, 2));
 	}
 
-	bool attack(float _damage) {
-        life -= _damage;
+	bool attack(Entity *enemy) {
+        life -= enemy->getDamage();
 		//std::cout << life << " - " << _damage << " = " << life - _damage << std::endl;
         if (life <= 0) {
+			enemy->addPoint(maxLife);
 			destroy();
             stop();
             return 1;
@@ -128,4 +141,17 @@ class Entity {
 	std::string getType() {
 		return type;
 	}
+
+	void addPoint(int points) {
+		score += points;
+	}
+
+	int getScore() {
+		return score;
+	}
+
+	void lookAt(sf::Vector2f point) {
+		position = sprite.getPosition();
+		rotation = (atan2(point.y - position.y, point.x - position.x)) * 180 / 3.14159265;
+    }
 };

@@ -10,7 +10,7 @@ class Player : public Rocket,  public Bboxed {
         float throttleStep = 1;
 
     public:
-    Player(std::string _name, sf::Vector2f position, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Rocket(_name, 1000, 0, position, renderQueue), Bboxed(bbox)  {
+    Player(std::string _name, float life, float damage, sf::Vector2f position, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Rocket(_name, life, damage, position, renderQueue), Bboxed(bbox)  {
         name = _name;
         mass = 1000;
     };
@@ -54,9 +54,10 @@ class Player : public Rocket,  public Bboxed {
     void rotateCounterClockwise() {
         rotation += rotationSpeed * animationTime.asMilliseconds()/1000;
     }
-	
+
 	void animate() {
         Rocket::animate();
         checkBoundries();
+        animationTimer.restart();
     }
 };

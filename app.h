@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-// App takes input from the user and maps it to the screen via the draw function.
+// App takes input from the user and maps it to the screen via the drawFrame function.
 // There are 2 "apps" in this project so far: Menu and Game itself.
 
 class App {
@@ -9,6 +9,9 @@ class App {
 	sf::Vector2f size;
 	sf::RenderWindow *window;
 	bool active = true;
+	bool paused = false;
+
+	std::vector<App*> overlays;
 
 	public:
 	App(sf::RenderWindow *_window) {
@@ -28,17 +31,41 @@ class App {
 		}
 	}
 
+	void addOverlay(App *overlay) {
+		overlay->stop();
+		overlays.push_back(overlay);
+	}
+
+	void removeOverlay(App *overlay) {
+		for(int i = 0; i < overlays.size(); ++i) {
+			if(overlay == overlays[i]){
+				overlays.erase(overlays.begin()+i);
+			}
+		}
+	}
+
 	bool isActive() {
 		return active;
 	}
 
 	void activate() {
+		paused = false;
 		active = true;
+		resume();
 		loop();
+	}
+
+	virtual void pause() {
+		paused = true;
+	}
+
+	virtual void resume() {
+		paused = false;
 	}
 
 	void stop() {
 		active = false;
+		pause();
 	}
 
 	void setSize(sf::Vector2f _size) {
@@ -53,11 +80,18 @@ class App {
 		return window;
 	}
 
-	virtual void draw() = 0;
+
+	virtual void drawFrame() = 0;
 
 	virtual void loop() {
-		consumeInput();
-		draw();
+		window->clear();
+		if(!paused) consumeInput();
+		this->drawFrame();
+		for(int i = 0; i < overlays.size(); ++i) {
+			overlays[i]->consumeInput();
+			overlays[i]->drawFrame();
+		}
+		window->display();
 		if(active) loop();
 	}
 

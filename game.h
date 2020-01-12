@@ -8,32 +8,45 @@
 
 class Game: public App {
     private:
-    bool running = 1;
+
+    int difficulty = 1;
+
+    App *mainMenu;
 	Player *falcon;
 	sf::FloatRect bbox;
 	std::vector<Entity*> renderQueue;
 
+    sf::Font font;
+    sf::Text score;
+    sf::Text life;
+
     sf::Vector2i mouse;
 
     sf::Clock gameTimer;
-    int gameTime;
-    int lastWave = 0;
+    float gameTime = 0, pauseTime = 0, pauseLength = 0, lastWave = 0;
 
     public:
-    Game(App *menu) : App(menu->getWindow()) {
-    	bbox.left = 0;
-    	bbox.top = 0;
-        bbox.width = (float)window->getSize().x;
-        bbox.height = (float)window->getSize().y;
+    Game(App *menu, int _difficulty) : App(menu->getWindow()) {
+        difficulty = _difficulty;
+        font.loadFromFile("assets/fonts/pixelated.ttf");
+        mainMenu = menu;
+    	bbox.left = -32;
+    	bbox.top = -32;
+        bbox.width = (float)window->getSize().x+64;
+        bbox.height = (float)window->getSize().y+64;
 
 		sf::Vector2f startPosition;
         startPosition.x = window->getSize().x/2;
     	startPosition.y = window->getSize().y/2;
-		falcon = new Player("player1", startPosition, bbox, &renderQueue);
+		falcon = new Player("player1", 100 * difficulty * difficulty, 10 * difficulty, startPosition, bbox, &renderQueue);
 
         renderQueue.push_back(falcon);
 
         this->setSize(sf::Vector2f(window->getSize()));
+
+       
+		score.setFont(font);	
+		score.setFillColor(sf::Color::White);
     }
 
 	void consumeInput() {
@@ -55,11 +68,6 @@ class Game: public App {
             } 
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num1)) {
-                Rocket *target = new Rocket("target", 100, 10, sf::Vector2f(sf::Mouse::getPosition(*window)), &renderQueue);
-                renderQueue.push_back(target);
-            } 
-
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num2)) {
                 Rocket *target = new Rocket("target", 100, 10, sf::Vector2f(sf::Mouse::getPosition(*window)), &renderQueue);
                 renderQueue.push_back(target);
             } 
@@ -95,13 +103,15 @@ class Game: public App {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         {
             this->stop();
-            Menu pause_menu(this);
-            pause_menu.addOption("Resume", [](App *_this, App *parent) 
+            Menu *pause_menu = new Menu(this);
+            pause_menu->addOption("Resume", [](App *_this, App *parent) 
             { 
+                //parent->removeOverlay(_this);
                 parent->activate();
+                delete _this;
             });
 
-            pause_menu.addOption("Exit", [](App *_this, App *parent) 
+            pause_menu->addOption("Exit", [](App *_this, App *parent) 
             { 
                 Menu confirmation(parent);
                 confirmation.addOption("Confirm", [](App *_this, App *parent) 
@@ -114,20 +124,27 @@ class Game: public App {
                 });
                 confirmation.loop();
             });
-            pause_menu.loop();
+            //this->addOverlay(pause_menu);
+            pause_menu->loop();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
         {
             this->stop();
-            Menu f1_menu(this);
-            f1_menu.addOption("Resume", [](App *_this, App *parent) 
+            Menu *f1_menu = new Menu(this);
+            f1_menu->addOption("Resume", [](App *_this, App *parent) 
             { 
+                //parent->removeOverlay(_this);
                 parent->activate();
+                //delete _this;
             });
 
-            f1_menu.addOption("Lorem ipsum dolor sit amet. \n lol");
+            f1_menu->addOption("The premise of the game consists of shooting down as many enemy spacecraft attacking your position as possible.");
+            f1_menu->addOption("Use arrow keys or WSAD to set the orientation and thrust of your engines.");
+            f1_menu->addOption("Spacebar toggles the engine thrust.");
+            f1_menu->addOption("E shoots a missle.");
             
-            f1_menu.loop();
+            f1_menu->loop();
+            //this->addOverlay(f1_menu);
         }
 
         sf::Vector2i point = sf::Mouse::getPosition(*window);
@@ -137,18 +154,63 @@ class Game: public App {
         }
 	};
 
-	void draw() {
-        gameTime = gameTimer.getElapsedTime().asMilliseconds();
+    void gameOver() {
+        this->stop();
+        Menu gameover_menu(mainMenu);
 
-        if(gameTime - lastWave > 2000) {
-            Rocket *enemy = new Rocket("enemy", 25 * (gameTime / 10000) + 1, 10, sf::Vector2f(0, 0), &renderQueue);
-            enemy->lookAt(sf::Vector2f(window->getSize().x/2,window->getSize().y/2));
-            enemy->throttleToggle();
-            renderQueue.push_back(enemy);
+        gameover_menu.addOption("You have scored " + std::to_string(falcon->getScore()) + " points. \n");
+        gameover_menu.addOption("Better luck next time!\n");
+        gameover_menu.addOption("Main Menu", [](App *_this, App *parent) 
+        { 
+            parent->activate();
+        });     
+        gameover_menu.addOption("Exit Game", [](App *_this, App *parent) 
+        {
+            _this->getWindow()->close();
+        });        
+        gameover_menu.loop();
+    }
+
+    void pause() {
+        paused = true;
+        pauseTime = gameTimer.getElapsedTime().asMilliseconds();
+        for(int i = 0; i < renderQueue.size(); ++i) {
+			renderQueue[i]->pause();
+        }
+    }
+    void resume() {
+        paused = false;
+        pauseLength += gameTimer.getElapsedTime().asMilliseconds() - pauseTime;
+        for(int i = 0; i < renderQueue.size(); ++i) {
+			renderQueue[i]->resume();
+        }
+        pauseTime = 0;
+    }
+
+    void spawnEnemy(sf::Vector2f position) {
+        Enemy *enemy = new Enemy("enemy", 25 * (gameTime / 10000) + 1, 10, position, bbox, &renderQueue);
+        enemy->lookAt(sf::Vector2f(window->getSize().x/2,window->getSize().y/2));
+        if(difficulty >= 2) enemy->targetEntity(falcon);
+        if(difficulty == 3) enemy->setAgressive();
+        enemy->throttleToggle();
+        renderQueue.push_back(enemy);
+    }
+
+	void drawFrame() {
+        gameTime = gameTimer.getElapsedTime().asMilliseconds() - pauseLength;
+        if(falcon->isDead() == true) {
+            this->gameOver();
+        }
+    
+        if(!paused && gameTime - lastWave > 2000) {
+            
+            spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), 0));
+            spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), (bbox.height - bbox.top)));
+            spawnEnemy(sf::Vector2f(0, rand() % int(bbox.height - bbox.top)));
+            spawnEnemy(sf::Vector2f((bbox.width - bbox.left), rand() % int(bbox.height - bbox.top)));
+
             lastWave = gameTime;
         }
-
-        window->clear();
 
 		for(int i = 0; i < renderQueue.size(); ++i) {
 			renderQueue[i]->draw(window);
@@ -168,9 +230,12 @@ class Game: public App {
             }
             
 		}
-
+        score.setString("Score: " + std::to_string(falcon->getScore()) + " Life: " + std::to_string(falcon->getLife()));
+        sf::FloatRect textRect = score.getLocalBounds();
+		score.setOrigin(textRect.width/2,textRect.height/2);
+        score.setPosition(bbox.width/2, textRect.height/2);
+        window->draw(score);
         //std::cout << renderQueue.size() << std::endl;
         
-        window->display();
 	}
 }; 

@@ -23,7 +23,6 @@ class Animation : public Entity {
 	};
 
 	void animate() {
-		animationTime = animationTimer.getElapsedTime();
 		if (animationTime.asMilliseconds() >= time) {
 			if (rectangle.left >= size.x*frames.x) {
 				rectangle.left = 0;

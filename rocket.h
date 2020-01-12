@@ -10,8 +10,6 @@ class Rocket: public Entity {
 		float engineISP = 10;
         sf::Texture texture1;
 
-        Entity *closestEntity;
-
     public:
     Rocket(std::string type, float life, float damage, sf::Vector2f position, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, 0, "assets/sprites/rocket-off.png", 0.1, renderQueue)  {
         texture1.loadFromFile("assets/sprites/rocket-on.png");
@@ -34,14 +32,12 @@ class Rocket: public Entity {
     void spawnMissle() {
         cooldownTime = cooldownTimer.getElapsedTime();
         if(cooldownTime.asMilliseconds() > 50.0f) {
-            renderQueue->push_back(new Missle(Rocket::getType(), 0, 30, Rocket::getPosition(), Rocket::getRotation(), 5000, renderQueue));
+            renderQueue->push_back(new Missle(this, 0, 30, 5000, renderQueue));
             cooldownTimer.restart();
         }
 	}
 
 	void animate() {
-		animationTime = animationTimer.getElapsedTime();
-
         sprite.setRotation(rotation + 90.f);
 
         if(engineOn) {
@@ -51,13 +47,12 @@ class Rocket: public Entity {
         } else sprite.setTexture(texture);
         
         sprite.move(velocity.x, velocity.y);
-
         animationTimer.restart();
 	};
 	
     void collide(Entity *entity) {
         if(entity->getType() != Rocket::getType() && entity->getType() != "animation") {
-            entity->attack(damage);
+            entity->attack(this);
             
             float colliderMass = entity->getMass();
             sf::Vector2f colliderPosition = entity->getPosition();

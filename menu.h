@@ -119,11 +119,8 @@ class Menu: public App {
 		stop();
 	}
 
-	void draw() {
-		window->clear();
-
+	void drawFrame() {
 		window->draw(logo);
-
 		for(int i = 0; i < options.size(); ++i) {
 			if(i == selected) {
 				options[i].setFillColor(sf::Color::Red);
@@ -134,7 +131,5 @@ class Menu: public App {
 			}
 			window->draw(options[i]);
 		}
-
-		window->display();
 	}
 };

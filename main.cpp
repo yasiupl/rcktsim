@@ -29,23 +29,49 @@ class Window {
     }
 };  
 
+class ClearScreen: public App {
+    private:
+    ClearScreen(sf::RenderWindow *window) : App(window) {};
+    void consumeInput() {}
+    void draw() {
+        window->clear();
+    }
+};
+
 
 int main()
 {
-	Window window(720, 480, "new game", MAX_FPS);
+	Window window(720, 480, "rcktsim", MAX_FPS);
     
     Menu menu(window.getTarget());
     menu.addOption("Play", [](App *_this, App *parent) 
     { 
-        Game game(_this);
-        game.loop();
+        Menu noobSelector(parent);
+        noobSelector.addOption("I'm too young to die", [](App *_this, App *parent) 
+        {
+            Game game(parent, 1);
+            game.loop();
+        });
+        noobSelector.addOption("Hey, not too rough", [](App *_this, App *parent) 
+        {
+            Game game(parent, 2);
+            game.loop();
+        });
+        noobSelector.addOption("Hurt Me Plenty", [](App *_this, App *parent) 
+        {
+            Game game(parent, 3);
+            game.loop();
+        });
+        noobSelector.loop();
+        
     });
 
     menu.addOption("Exit Game", [](App *_this, App *parent) 
     { 
         Menu menu1(parent);
         menu1.addOption("Confirm", [](App *_this, App *parent) 
-        { 
+        {
+            _this->getWindow()->close();
         });
         menu1.addOption("Go Back", [](App *_this, App *parent) 
         { 
