@@ -14,24 +14,28 @@ class Missle : public Entity, public Bboxed {
         float speed = 1000;
 
     public:
-    Missle(Entity *_parent, float life, float damage, float _time, std::vector<Entity*> *renderQueue) : Entity(_parent->getType(), life, damage, _parent->getPosition(), _parent->getRotation() - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
+    Missle(Entity *_parent, float life, float damage, float _speed, float _time, std::vector<Entity*> *renderQueue) : Entity(_parent->getType(), life, damage, _parent->getPosition(), _parent->getRotation() - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
         parent = _parent;
+        speed = _speed;
         time = _time;
         mass = 1;
     }
-    Missle(Entity *_parent, float life, float damage, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Entity(_parent->getType(), life, damage, _parent->getPosition(), _parent->getRotation() - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(bbox) {
+    Missle(Entity *_parent, float life, float damage, float _speed, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Entity(_parent->getType(), life, damage, _parent->getPosition(), _parent->getRotation() - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(bbox) {
         parent = _parent;
         bounded = true;
+        speed = _speed;
         mass = 1;
     }
-    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, float _time, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
+    Missle(std::string type, float life, float damage, float _speed, sf::Vector2f position, float rotation, float _time, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(sf::FloatRect(0, 0, 0, 0)) {
         parent = this;
         time = _time;
+        speed = _speed;
         mass = 1;
     }
-    Missle(std::string type, float life, float damage, sf::Vector2f position, float rotation, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(bbox) {
+    Missle(std::string type, float life, float damage, float _speed, sf::Vector2f position, float rotation, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Entity(type, life, damage, position, rotation - 90.f, "assets/sprites/missle.png", 0.1, renderQueue), Bboxed(bbox) {
         parent = this;
         bounded = true;
+        speed = _speed;
         mass = 1;
     }
 

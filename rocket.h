@@ -31,8 +31,8 @@ class Rocket: public Entity {
 
     void spawnMissle() {
         cooldownTime = cooldownTimer.getElapsedTime();
-        if(cooldownTime.asMilliseconds() > 50.0f) {
-            renderQueue->push_back(new Missle(this, 0, 30, 5000, renderQueue));
+        if(cooldownTime.asMilliseconds() > 100.0f) {
+            renderQueue->push_back(new Missle(this, 0, 30, 1000, 5000, renderQueue));
             cooldownTimer.restart();
         }
 	}

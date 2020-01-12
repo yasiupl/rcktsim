@@ -62,6 +62,11 @@ int main()
             Game game(parent, 3);
             game.loop();
         });
+        noobSelector.addOption("Ultra-Violence", [](App *_this, App *parent) 
+        {
+            Game game(parent, 4);
+            game.loop();
+        });
         noobSelector.loop();
         
     });

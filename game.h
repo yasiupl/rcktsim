@@ -18,22 +18,28 @@ class Game: public App {
 
     sf::Font font;
     sf::Text score;
-    sf::Text life;
+
+    //sf::View *view;
+
+    sf::Texture background;
+    sf::RectangleShape backdrop;
 
     sf::Vector2i mouse;
 
-    sf::Clock gameTimer;
-    float gameTime = 0, pauseTime = 0, pauseLength = 0, lastWave = 0;
+    sf::Clock gameTimer, waveTimer;
+    float gameTime = 0, pauseTime = 0, pauseLength = 0;
 
     public:
     Game(App *menu, int _difficulty) : App(menu->getWindow()) {
         difficulty = _difficulty;
-        font.loadFromFile("assets/fonts/pixelated.ttf");
+        font.loadFromFile("assets/fonts/moonshot.ttf");
         mainMenu = menu;
-    	bbox.left = -32;
-    	bbox.top = -32;
-        bbox.width = (float)window->getSize().x+64;
-        bbox.height = (float)window->getSize().y+64;
+    	bbox.left = 0;
+    	bbox.top = 0;
+        bbox.width = (float)window->getSize().x;
+        bbox.height = (float)window->getSize().y;
+        
+        //view = new sf::View(bbox);
 
 		sf::Vector2f startPosition;
         startPosition.x = window->getSize().x/2;
@@ -44,9 +50,13 @@ class Game: public App {
 
         this->setSize(sf::Vector2f(window->getSize()));
 
-       
 		score.setFont(font);	
 		score.setFillColor(sf::Color::White);
+
+        background.loadFromFile("assets/background.png");
+        backdrop.setTexture(&background);
+        backdrop.setSize(sf::Vector2f(bbox.width, bbox.height));
+        backdrop.setPosition(bbox.left, bbox.top);
     }
 
 	void consumeInput() {
@@ -60,20 +70,17 @@ class Game: public App {
                 window->close();
             }
 
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Space)) {
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Space) && (event.key.code == sf::Keyboard::Space)) {
                 falcon->throttleToggle();
             }   
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::E)) {
-                falcon->spawnMissle();
-            } 
-
+            //Developer bindings
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num1)) {
                 Rocket *target = new Rocket("target", 100, 10, sf::Vector2f(sf::Mouse::getPosition(*window)), &renderQueue);
                 renderQueue.push_back(target);
             } 
 
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Num3)) {
-                Missle *practice = new Missle("practice", 0, 30, sf::Vector2f(sf::Mouse::getPosition(*window)), 0, bbox, &renderQueue);
+                Missle *practice = new Missle("practice", 0, 30, 4000, sf::Vector2f(sf::Mouse::getPosition(*window)), 0, bbox, &renderQueue);
 
                 renderQueue.push_back(practice);
             }  
@@ -99,6 +106,10 @@ class Game: public App {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         {
             falcon->rotateCounterClockwise();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+        {
+            falcon->spawnMissle();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         {
@@ -158,16 +169,25 @@ class Game: public App {
         this->stop();
         Menu gameover_menu(mainMenu);
 
-        gameover_menu.addOption("You have scored " + std::to_string(falcon->getScore()) + " points. \n");
+        gameover_menu.addOption("You have scored " + std::to_string(falcon->getScore() * difficulty) + " points. \n");
         gameover_menu.addOption("Better luck next time!\n");
         gameover_menu.addOption("Main Menu", [](App *_this, App *parent) 
         { 
             parent->activate();
         });     
         gameover_menu.addOption("Exit Game", [](App *_this, App *parent) 
-        {
-            _this->getWindow()->close();
-        });        
+            { 
+                Menu confirmation(parent);
+                confirmation.addOption("Confirm", [](App *_this, App *parent) 
+                {
+                    _this->getWindow()->close();
+                });
+                confirmation.addOption("Go Back", [](App *_this, App *parent) 
+                { 
+                    parent->activate();
+                });
+                confirmation.loop();
+            });    
         gameover_menu.loop();
     }
 
@@ -191,7 +211,7 @@ class Game: public App {
         Enemy *enemy = new Enemy("enemy", 25 * (gameTime / 10000) + 1, 10, position, bbox, &renderQueue);
         enemy->lookAt(sf::Vector2f(window->getSize().x/2,window->getSize().y/2));
         if(difficulty >= 2) enemy->targetEntity(falcon);
-        if(difficulty == 3) enemy->setAgressive();
+        enemy->setDifficulty(difficulty);
         enemy->throttleToggle();
         renderQueue.push_back(enemy);
     }
@@ -200,16 +220,22 @@ class Game: public App {
         gameTime = gameTimer.getElapsedTime().asMilliseconds() - pauseLength;
         if(falcon->isDead() == true) {
             this->gameOver();
-        }
-    
-        if(!paused && gameTime - lastWave > 2000) {
+        }  
+
+        //view->setRotation(falcon->getRotation());
+        //view->setCenter(falcon->getPosition());
+        //window->setView(*view);
+
+        window->draw(backdrop);
+
+        if(!paused && waveTimer.getElapsedTime().asMilliseconds() > 2000) {
             
             spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), 0));
             spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), (bbox.height - bbox.top)));
             spawnEnemy(sf::Vector2f(0, rand() % int(bbox.height - bbox.top)));
             spawnEnemy(sf::Vector2f((bbox.width - bbox.left), rand() % int(bbox.height - bbox.top)));
 
-            lastWave = gameTime;
+            waveTimer.restart();
         }
 
 		for(int i = 0; i < renderQueue.size(); ++i) {
@@ -230,7 +256,7 @@ class Game: public App {
             }
             
 		}
-        score.setString("Score: " + std::to_string(falcon->getScore()) + " Life: " + std::to_string(falcon->getLife()));
+        score.setString("Multiplyer: " + std::to_string(difficulty) + "   Score: " + std::to_string(falcon->getScore()) + "    Life: " + std::to_string((int)falcon->getLife()));
         sf::FloatRect textRect = score.getLocalBounds();
 		score.setOrigin(textRect.width/2,textRect.height/2);
         score.setPosition(bbox.width/2, textRect.height/2);

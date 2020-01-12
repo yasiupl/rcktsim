@@ -94,8 +94,9 @@ class Menu: public App {
 	private:
 
 	void setup() {
-		font.loadFromFile("assets/fonts/pixelated.ttf");
+		font.loadFromFile("assets/fonts/moonshot.ttf");
 		logoTexture.loadFromFile("assets/logo.png");
+		logoTexture.setSmooth(true);
 		logo.setTexture(logoTexture);
 		sf::FloatRect logoRect = logo.getLocalBounds();
 		logo.setOrigin(logoRect.width/2,logoRect.height/2);
@@ -123,7 +124,7 @@ class Menu: public App {
 		window->draw(logo);
 		for(int i = 0; i < options.size(); ++i) {
 			if(i == selected) {
-				options[i].setFillColor(sf::Color::Red);
+				options[i].setFillColor(sf::Color::Blue);
 				options[i].setStyle(sf::Text::Bold);
 			} else {
 				options[i].setFillColor(sf::Color::White);

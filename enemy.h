@@ -7,7 +7,7 @@ class Enemy : public Rocket,  public Bboxed {
 
     protected:
 		Entity *target;
-        bool shoot = false;
+        int difficulty = 0;
 
     public:
     Enemy(std::string _name, float life, float damage, sf::Vector2f position, sf::FloatRect bbox, std::vector<Entity*> *renderQueue) : Rocket(_name, life, damage, position, renderQueue), Bboxed(bbox)  {
@@ -17,23 +17,23 @@ class Enemy : public Rocket,  public Bboxed {
 
     void checkBoundries() {
         position = sprite.getPosition();
-        if(!bbox.contains(sprite.getPosition())) destroy();
+        if(!bbox.contains(sprite.getPosition())) stop();
     }
 
     void targetEntity(Entity *_target) {
         target = _target;
     }
 
-    void setAgressive() {
-        shoot = true;
+    void setDifficulty(int _difficulty) {
+        difficulty = _difficulty;
     }
 
 	void animate() {
-        if(shoot) {
+        if(difficulty >= 3) {
             cooldownTime = cooldownTimer.getElapsedTime();
             if(cooldownTime.asMilliseconds() > rand() % 1000 + 1000.f) {
-                Missle *missle = new Missle(this, 0, 30, bbox, renderQueue);
-                missle->targetEntity(target);
+                Missle *missle = new Missle(this, 0, 30, 500, bbox, renderQueue);
+                if(difficulty == 4) missle->targetEntity(target);
                 renderQueue->push_back(missle);
                 cooldownTimer.restart();
             }
