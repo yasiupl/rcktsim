@@ -69,7 +69,7 @@ class Menu: public App {
 		options.push_back(option);
 		callbacks.push_back(callback);
 
-		for(int i = 0; i < options.size(); ++i) {
+		for(int i = 0; i < (int)options.size(); ++i) {
 			options[i].setPosition(sf::Vector2f(size.x / 2, (size.y / 2) - (options.size() * textRect.height * 2)/2 + textRect.height * 2 * i));
 		}	
 	}
@@ -86,7 +86,7 @@ class Menu: public App {
 		options.push_back(option);
 		callbacks.push_back([](App *menu, App *parent) {menu->activate();});
 
-		for(int i = 0; i < options.size(); ++i) {
+		for(int i = 0; i < (int)options.size(); ++i) {
 			options[i].setPosition(sf::Vector2f(size.x / 2, (size.y / 2) - (options.size() * textRect.height * 2)/2 + textRect.height * 2 * i));
 		}	 
 	}
@@ -110,7 +110,7 @@ class Menu: public App {
 	}
 
 	void selectDown() {
-		if(selected + 1 < options.size()) {
+		if(selected + 1 < (int)options.size()) {
 			selected += 1;
 		}
 	}
@@ -122,7 +122,7 @@ class Menu: public App {
 
 	void drawFrame() {
 		window->draw(logo);
-		for(int i = 0; i < options.size(); ++i) {
+		for(int i = 0; i < (int)options.size(); ++i) {
 			if(i == selected) {
 				options[i].setFillColor(sf::Color::Blue);
 				options[i].setStyle(sf::Text::Bold);
