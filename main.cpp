@@ -51,25 +51,21 @@ int main()
         {
             Game game(parent, 1);
             game.loop();
-            _this->activate();
         });
         noobSelector.addOption("Hey, not too rough", [](App *_this, App *parent) 
         {
             Game game(parent, 2);
             game.loop();
-            _this->activate();
         });
         noobSelector.addOption("Hurt Me Plenty", [](App *_this, App *parent) 
         {
             Game game(parent, 3);
             game.loop();
-            _this->activate();
         });
         noobSelector.addOption("Ultra-Violence", [](App *_this, App *parent) 
         {
             Game game(parent, 4);
             game.loop();
-            _this->activate();
         });
         noobSelector.loop();
         

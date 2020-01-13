@@ -122,17 +122,13 @@ class Game: public App {
                 //delete _this;
             });
 
-            pause_menu->addOption("Main Menu", [](App *_this, App *parent) 
-            { 
-                parent->stop();
-            });
-
             pause_menu->addOption("Exit", [](App *_this, App *parent) 
             { 
                 Menu confirmation(parent);
                 confirmation.addOption("Confirm", [](App *_this, App *parent) 
                 {
                     _this->getWindow()->close();
+                    parent->stop();
                 });
                 confirmation.addOption("Go Back", [](App *_this, App *parent) 
                 { 
@@ -175,7 +171,7 @@ class Game: public App {
         Menu gameover_menu(mainMenu);
 
         gameover_menu.addOption("You have scored " + std::to_string(falcon->getScore() * difficulty) + " points. \n");
-        gameover_menu.addOption("Time: " + std::to_string(gameTimer.getElapsedTime().asSeconds()) + " seconds");
+        gameover_menu.addOption("Time: " + std::to_string((int)gameTimer.getElapsedTime().asSeconds()) + " seconds");
         gameover_menu.addOption("Better luck next time!\n");
         gameover_menu.addOption("Main Menu", [](App *_this, App *parent) 
         { 
