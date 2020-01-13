@@ -52,6 +52,9 @@ class Entity {
 			sprite.setRotation(_rotation);
 		}
 
+		virtual ~Entity() {
+		}
+
 	virtual void animate() = 0;
 
 	virtual void destroy() = 0;
