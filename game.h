@@ -26,8 +26,8 @@ class Game: public App {
 
     sf::Vector2i mouse;
 
-    sf::Clock gameTimer, waveTimer;
-    float gameTime = 0, pauseTime = 0, pauseLength = 0;
+    sf::Clock gameTimer;
+    float gameTime = 0, waveTime = 0, pauseTime = 0, pauseLength = 0;
 
     public:
     Game(App *menu, int _difficulty) : App(menu->getWindow()) {
@@ -119,7 +119,12 @@ class Game: public App {
             { 
                 //parent->removeOverlay(_this);
                 parent->activate();
-                delete _this;
+                //delete _this;
+            });
+
+            pause_menu->addOption("Main Menu", [](App *_this, App *parent) 
+            { 
+                parent->stop();
             });
 
             pause_menu->addOption("Exit", [](App *_this, App *parent) 
@@ -170,6 +175,7 @@ class Game: public App {
         Menu gameover_menu(mainMenu);
 
         gameover_menu.addOption("You have scored " + std::to_string(falcon->getScore() * difficulty) + " points. \n");
+        gameover_menu.addOption("Time: " + std::to_string(gameTimer.getElapsedTime().asSeconds()) + " seconds");
         gameover_menu.addOption("Better luck next time!\n");
         gameover_menu.addOption("Main Menu", [](App *_this, App *parent) 
         { 
@@ -181,6 +187,7 @@ class Game: public App {
                 confirmation.addOption("Confirm", [](App *_this, App *parent) 
                 {
                     _this->getWindow()->close();
+                    parent->stop();
                 });
                 confirmation.addOption("Go Back", [](App *_this, App *parent) 
                 { 
@@ -194,17 +201,16 @@ class Game: public App {
     void pause() {
         paused = true;
         pauseTime = gameTimer.getElapsedTime().asMilliseconds();
-        for(int i = 0; i < renderQueue.size(); ++i) {
+        for(int i = 0; i < (int)renderQueue.size(); ++i) {
 			renderQueue[i]->pause();
         }
     }
     void resume() {
         paused = false;
         pauseLength += gameTimer.getElapsedTime().asMilliseconds() - pauseTime;
-        for(int i = 0; i < renderQueue.size(); ++i) {
+        for(int i = 0; i < (int)renderQueue.size(); ++i) {
 			renderQueue[i]->resume();
         }
-        pauseTime = 0;
     }
 
     void spawnEnemy(sf::Vector2f position) {
@@ -218,6 +224,7 @@ class Game: public App {
 
 	void drawFrame() {
         gameTime = gameTimer.getElapsedTime().asMilliseconds() - pauseLength;
+
         if(falcon->isDead() == true) {
             this->gameOver();
         }  
@@ -228,17 +235,17 @@ class Game: public App {
 
         window->draw(backdrop);
 
-        if(!paused && waveTimer.getElapsedTime().asMilliseconds() > 2000) {
+        if(!paused && (gameTime - waveTime > 5000 || gameTime - waveTime == 0)) {
             
             spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), 0));
             spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), (bbox.height - bbox.top)));
             spawnEnemy(sf::Vector2f(0, rand() % int(bbox.height - bbox.top)));
             spawnEnemy(sf::Vector2f((bbox.width - bbox.left), rand() % int(bbox.height - bbox.top)));
 
-            waveTimer.restart();
+            waveTime = gameTime;
         }
 
-		for(int i = 0; i < renderQueue.size(); ++i) {
+		for(int i = 0; i < (int)renderQueue.size(); ++i) {
 			renderQueue[i]->draw(window);
 
             if(renderQueue[i]->isDead()) {
@@ -246,7 +253,7 @@ class Game: public App {
                 renderQueue.erase(renderQueue.begin() + i);
             } 
 
-            for(int j = 0; j < renderQueue.size(); ++j) {
+            for(int j = 0; j < (int)renderQueue.size(); ++j) {
                 if(i != j && renderQueue[i]->getHitbox().contains(renderQueue[j]->getPosition())) {
                     if(renderQueue[i]->isDead() == false) {
                         renderQueue[i]->collide(renderQueue[j]);
@@ -256,7 +263,8 @@ class Game: public App {
             }
             
 		}
-        score.setString("Multiplyer: " + std::to_string(difficulty) + "   Score: " + std::to_string(falcon->getScore()) + "    Life: " + std::to_string((int)falcon->getLife()));
+
+        score.setString("Time: " + std::to_string((int)gameTimer.getElapsedTime().asSeconds()) + " Multiplier: " + std::to_string(difficulty) + "   Score: " + std::to_string(falcon->getScore()) + "    Life: " + std::to_string((int)falcon->getLife()));
         sf::FloatRect textRect = score.getLocalBounds();
 		score.setOrigin(textRect.width/2,textRect.height/2);
         score.setPosition(bbox.width/2, textRect.height/2);

@@ -50,9 +50,10 @@ class Missle : public Entity, public Bboxed {
     }
 
     void collide(Entity *entity) {
-        if(entity->getType() != getType() && entity->getTime() > 100.f && Missle::getTime() > 100.f && entity->getType() != "animation")
+        if(entity->getType() != getType() && entity->getTime() > 100.f && Missle::getTime() > 100.f && entity->getType() != "animation") {
             entity->attack(this);
             if(parent != this) parent->addPoint(score);
+        }
         
     }
 

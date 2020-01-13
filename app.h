@@ -37,7 +37,7 @@ class App {
 	}
 
 	void removeOverlay(App *overlay) {
-		for(int i = 0; i < overlays.size(); ++i) {
+		for(int i = 0; i < (int)overlays.size(); ++i) {
 			if(overlay == overlays[i]){
 				overlays.erase(overlays.begin()+i);
 			}
@@ -87,12 +87,11 @@ class App {
 		window->clear();
 		if(!paused) consumeInput();
 		this->drawFrame();
-		for(int i = 0; i < overlays.size(); ++i) {
+		for(int i = 0; i < (int)overlays.size(); ++i) {
 			overlays[i]->consumeInput();
 			overlays[i]->drawFrame();
 		}
 		window->display();
 		if(active) loop();
 	}
-
 };
