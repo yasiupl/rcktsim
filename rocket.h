@@ -66,7 +66,7 @@ class Rocket: public Entity {
     }
 
     void destroy() {
-        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "assets/sprites/explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));
+        renderQueue->push_back(new Animation(sprite.getPosition(), sprite.getRotation(), 2, "assets/sprites/explosion.png", sf::Vector2i(96, 96), sf::Vector2i(4,4), 50.f, renderQueue));       
         stop();
     }
 };

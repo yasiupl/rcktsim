@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+#include "scoreboard.h"
 #include "menu.h"
 #include "game.h"
 
@@ -69,6 +70,23 @@ int main()
         });
         noobSelector.loop();
         
+    });
+
+    menu.addOption("Scoreboard", [](App *_this, App *parent) 
+    { 
+        Menu scoreboard_menu(parent);
+        
+        scoreboard_menu.addOption("Go Back", [](App *_this, App *parent) 
+        { 
+            parent->activate();
+        });
+
+        Scoreboard scoreboard;
+        scoreboard.forEachGame(&scoreboard_menu, [](Menu *menu, Scoreboard_game game){
+            //std::cout << game.name + ": " + std::to_string(game.score) + " (" + std::to_string((int)game.time) + ")" << std::endl;
+            menu->addOption(std::to_string(game.score) + " points in " + std::to_string((int)game.time) + " seconds at difficulty lvl " + std::to_string(game.difficulty));
+        });
+        scoreboard_menu.loop();
     });
 
     menu.addOption("Exit Game", [](App *_this, App *parent) 

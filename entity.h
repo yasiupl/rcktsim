@@ -13,7 +13,7 @@ class Entity {
 		
 		std::string type;
 
-		float maxLife, life, damage, rotation, scale, mass = 1;
+		float maxLife, health, damage, rotation, scale, mass = 1;
 
 		std::vector<Entity*> *renderQueue;
         sf::Sprite sprite;
@@ -31,10 +31,10 @@ class Entity {
 		sf::Time pauseTime;
 
 	public:
-		Entity(std::string _type, float _life, float _damage, sf::Vector2f _position, float _rotation, std::string _texture, float _scale, std::vector<Entity*> *_renderQueue) {
+		Entity(std::string _type, float _health, float _damage, sf::Vector2f _position, float _rotation, std::string _texture, float _scale, std::vector<Entity*> *_renderQueue) {
 			type = _type;
-			maxLife = _life;
-			life = _life;
+			maxLife = _health;
+			health = _health;
 			damage = _damage;
 			position = _position;
 
@@ -55,11 +55,11 @@ class Entity {
 		virtual ~Entity() {
 		}
 
-	virtual void animate() = 0;
+	virtual void animate() {};
 
-	virtual void destroy() = 0;
+	virtual void destroy() {};
 
-	virtual void collide(Entity *entity) = 0;
+	virtual void collide(Entity *entity) {};
 
 	void draw(sf::RenderTarget* target) {
 		if(active == true) {
@@ -90,24 +90,26 @@ class Entity {
 		return sqrt(pow(distant.x - position.x, 2) + pow(position.y - distant.x, 2));
 	}
 
-	bool attack(Entity *enemy) {
-        life -= enemy->getDamage();
-		//std::cout << life << " - " << _damage << " = " << life - _damage << std::endl;
-        if (life <= 0) {
+	void attack(Entity *enemy) {
+        health -= enemy->getDamage();
+		//std::cout << health << " - " << _damage << " = " << health - _damage << std::endl;
+        if (health <= 0) {
 			enemy->addPoint(maxLife);
 			destroy();
             stop();
-            return 1;
         }
-        return 0;
     }
+
+	void heal(float heal) {
+		health += heal;
+	}
 
 	float getDamage() {
 		return damage;
 	}
 
 	float getLife() {
-		return life;
+		return health;
 	}
 
 	float getTime() {

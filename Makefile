@@ -1,4 +1,4 @@
-PREFIX=/usr/SFML-2.5.2
+PREFIX=[Path_to_SFML]
 
 build: ## Build the binary
 	g++ -c -g -Wall main.cpp -I$(PREFIX)/include

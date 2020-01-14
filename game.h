@@ -5,12 +5,13 @@
 #include "missle.h"
 #include "player.h"
 #include "enemy.h"
+#include "scoreboard.h"
 
 class Game: public App {
     private:
 
     int difficulty = 1;
-
+    unsigned int iterations = 0;
     App *mainMenu;
 	Player *falcon;
 	sf::FloatRect bbox;
@@ -32,7 +33,6 @@ class Game: public App {
     public:
     Game(App *menu, int _difficulty) : App(menu->getWindow()) {
         difficulty = _difficulty;
-        font.loadFromFile("assets/fonts/moonshot.ttf");
         mainMenu = menu;
     	bbox.left = 0;
     	bbox.top = 0;
@@ -50,6 +50,7 @@ class Game: public App {
 
         this->setSize(sf::Vector2f(window->getSize()));
 
+        font.loadFromFile("assets/fonts/moonshot.ttf");
 		score.setFont(font);	
 		score.setFillColor(sf::Color::White);
 
@@ -168,11 +169,19 @@ class Game: public App {
 
     void gameOver() {
         this->stop();
+        Scoreboard_game game;
+        game.difficulty = difficulty;
+        game.time = gameTimer.getElapsedTime().asSeconds();
+        game.score = falcon->getScore() * difficulty;
+        
+        Scoreboard scoreboard;
+        scoreboard.addGame(&game);
+
         Menu gameover_menu(mainMenu);
 
-        gameover_menu.addOption("You have scored " + std::to_string(falcon->getScore() * difficulty) + " points. \n");
-        gameover_menu.addOption("Time: " + std::to_string((int)gameTimer.getElapsedTime().asSeconds()) + " seconds");
-        gameover_menu.addOption("Better luck next time!\n");
+        gameover_menu.addOption("You have scored " + std::to_string(game.score) + " points. \n");
+        gameover_menu.addOption("Time: " + std::to_string((int)game.time) + " seconds");
+        gameover_menu.addOption("Better luck next time!");
         gameover_menu.addOption("Main Menu", [](App *_this, App *parent) 
         { 
             parent->activate();
@@ -191,7 +200,10 @@ class Game: public App {
                 });
                 confirmation.loop();
             });    
+
+        delete falcon;
         gameover_menu.loop();
+       
     }
 
     void pause() {
@@ -230,8 +242,7 @@ class Game: public App {
         //window->setView(*view);
 
         window->draw(backdrop);
-
-        if(!paused && (gameTime - waveTime > 5000 || gameTime - waveTime == 0)) {
+        if(!paused && (gameTime - waveTime > 5000 || iterations == 0)) {
             
             spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), 0));
             spawnEnemy(sf::Vector2f(rand() % int(bbox.width - bbox.left), (bbox.height - bbox.top)));
@@ -260,12 +271,12 @@ class Game: public App {
             
 		}
 
-        score.setString("Time: " + std::to_string((int)gameTimer.getElapsedTime().asSeconds()) + " Multiplier: " + std::to_string(difficulty) + "   Score: " + std::to_string(falcon->getScore()) + "    Life: " + std::to_string((int)falcon->getLife()));
+        score.setString("Time: " + std::to_string((int)gameTimer.getElapsedTime().asSeconds()) + "    Multiplier: " + std::to_string(difficulty) + "   Score: " + std::to_string(falcon->getScore()) + "    Life: " + std::to_string((int)falcon->getLife()));
         sf::FloatRect textRect = score.getLocalBounds();
 		score.setOrigin(textRect.width/2,textRect.height/2);
         score.setPosition(bbox.width/2, textRect.height/2);
         window->draw(score);
         //std::cout << renderQueue.size() << std::endl;
-        
+        ++iterations;
 	}
 }; 

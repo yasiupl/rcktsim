@@ -31,8 +31,8 @@ class Enemy : public Rocket,  public Bboxed {
 	void animate() {
         if(difficulty >= 3) {
             cooldownTime = cooldownTimer.getElapsedTime();
-            if(cooldownTime.asMilliseconds() > rand() % 1000 + 1000.f) {
-                Missle *missle = new Missle(this, 0, 30, 500, bbox, renderQueue);
+            if(cooldownTime.asMilliseconds() > rand() % 2000 + 1000.f) {
+                Missle *missle = new Missle(this, 0, 30, 500, 2000, renderQueue);
                 if(difficulty == 4) missle->targetEntity(target);
                 renderQueue->push_back(missle);
                 cooldownTimer.restart();

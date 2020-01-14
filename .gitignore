@@ -1,6 +1,8 @@
 .vscode/
+.vs/
 sprawozdania
 SFML-2.5.1
+scoreboard.txt
 
 # Prerequisites
 *.d
