@@ -151,7 +151,8 @@ class Game: public App {
                 //delete _this;
             });
 
-            f1_menu->addOption("The premise of the game consists of shooting down as many enemy spacecraft attacking your position as possible.");
+            f1_menu->addOption("The premise of the game consists of");
+            f1_menu->addOption("shooting down as many enemy spacecraft attacking your position as possible.");
             f1_menu->addOption("Use arrow keys or WSAD to set the orientation and thrust of your engines.");
             f1_menu->addOption("Spacebar toggles the engine thrust.");
             f1_menu->addOption("E shoots a missle.");
