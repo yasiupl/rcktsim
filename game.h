@@ -60,6 +60,13 @@ class Game: public App {
         backdrop.setPosition(bbox.left, bbox.top);
     }
 
+    virtual ~Game() {
+        for(int i = 0; i < (int)renderQueue.size(); ++i) {
+            delete renderQueue[i];
+            renderQueue.erase(renderQueue.begin() + i);
+        } 
+    }
+
 	void consumeInput() {
 		sf::Event event;
 		
@@ -118,9 +125,7 @@ class Game: public App {
             Menu *pause_menu = new Menu(this);
             pause_menu->addOption("Resume", [](App *_this, App *parent) 
             { 
-                //parent->removeOverlay(_this);
                 parent->activate();
-                //delete _this;
             });
 
             pause_menu->addOption("Exit", [](App *_this, App *parent) 
@@ -137,7 +142,6 @@ class Game: public App {
                 });
                 confirmation.loop();
             });
-            //this->addOverlay(pause_menu);
             pause_menu->loop();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
@@ -146,9 +150,7 @@ class Game: public App {
             Menu *f1_menu = new Menu(this);
             f1_menu->addOption("Resume", [](App *_this, App *parent) 
             { 
-                //parent->removeOverlay(_this);
                 parent->activate();
-                //delete _this;
             });
 
             f1_menu->addOption("The premise of the game consists of");
@@ -158,7 +160,6 @@ class Game: public App {
             f1_menu->addOption("E shoots a missle.");
             
             f1_menu->loop();
-            //this->addOverlay(f1_menu);
         }
 
         sf::Vector2i point = sf::Mouse::getPosition(*window);
@@ -201,8 +202,6 @@ class Game: public App {
                 });
                 confirmation.loop();
             });    
-
-        delete falcon;
         gameover_menu.loop();
        
     }

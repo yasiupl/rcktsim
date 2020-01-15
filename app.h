@@ -11,8 +11,6 @@ class App {
 	bool active = true;
 	bool paused = false;
 
-	std::vector<App*> overlays;
-
 	public:
 	App(sf::RenderWindow *_window) {
 		window = _window;
@@ -28,19 +26,6 @@ class App {
                 stop();
                 window->close();
             }
-		}
-	}
-
-	void addOverlay(App *overlay) {
-		overlay->stop();
-		overlays.push_back(overlay);
-	}
-
-	void removeOverlay(App *overlay) {
-		for(int i = 0; i < (int)overlays.size(); ++i) {
-			if(overlay == overlays[i]){
-				overlays.erase(overlays.begin()+i);
-			}
 		}
 	}
 
@@ -87,10 +72,6 @@ class App {
 		window->clear();
 		if(!paused) consumeInput();
 		this->drawFrame();
-		for(int i = 0; i < (int)overlays.size(); ++i) {
-			overlays[i]->consumeInput();
-			overlays[i]->drawFrame();
-		}
 		window->display();
 		if(active) loop();
 	}

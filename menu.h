@@ -87,6 +87,7 @@ class Menu: public App {
 		callbacks.push_back([](App *menu, App *parent) {menu->activate();});
 
 		for(int i = 0; i < (int)options.size(); ++i) {
+			logo.setPosition(size.x/2, (size.y/2) - options.size() * textRect.height * 2);
 			options[i].setPosition(sf::Vector2f(size.x / 2, (size.y / 2) - (options.size() * textRect.height * 2)/2 + textRect.height * 2 * i));
 		}	 
 	}
@@ -99,7 +100,7 @@ class Menu: public App {
 		logoTexture.setSmooth(true);
 		logo.setTexture(logoTexture);
 		sf::FloatRect logoRect = logo.getLocalBounds();
-		logo.setOrigin(logoRect.width/2,logoRect.height/2);
+		logo.setOrigin(logoRect.width/2,logoRect.height);
 		logo.setPosition(size.x/2, size.y/3);
 	}
 

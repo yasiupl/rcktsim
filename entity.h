@@ -63,10 +63,13 @@ class Entity {
 
 	void draw(sf::RenderTarget* target) {
 		if(active == true) {
+			cooldownTime = cooldownTimer.getElapsedTime() - pauseTime;
 			animationTime = animationTimer.getElapsedTime() - pauseTime;
 			pauseTime = pauseTime.Zero;
         	animate();
-		} else animationTimer.restart();
+		} else {
+			animationTimer.restart();
+		}
 		target->draw(sprite);
     }
 
