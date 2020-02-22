@@ -14,3 +14,5 @@ On Ubuntu:
     ```sudo apt-get install libsfml-dev```
 
 Then: ```make help```
+
+![rcktsim](https://raw.githubusercontent.com/yasiupl/rcktsim/master/rcktsim.png)
