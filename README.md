@@ -1,5 +1,5 @@
 # rcktsim
-Simple C++ 2D Rocket Simulation. School Project.
+Simple C++ 2D Rocket Simulation. University Project.
 
 ![rcktsim](https://raw.githubusercontent.com/yasiupl/rcktsim/master/rcktsim.png)
 
